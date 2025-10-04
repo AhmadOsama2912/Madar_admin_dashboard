@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Vue Element Admin',
+  title: 'Madar Admin Portal',
 
   /**
    * @type {boolean} true | false
