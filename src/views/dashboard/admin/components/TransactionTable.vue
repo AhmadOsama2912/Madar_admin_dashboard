@@ -1,55 +1,20 @@
 <template>
-  <el-table :data="list" style="width: 100%;padding-top: 15px;">
-    <el-table-column label="Order_No" min-width="200">
-      <template slot-scope="scope">
-        {{ scope.row.order_no | orderNoFilter }}
-      </template>
-    </el-table-column>
-    <el-table-column label="Price" width="195" align="center">
-      <template slot-scope="scope">
-        ¥{{ scope.row.price | toThousandFilter }}
-      </template>
-    </el-table-column>
-    <el-table-column label="Status" width="100" align="center">
-      <template slot-scope="{row}">
-        <el-tag :type="row.status | statusFilter">
-          {{ row.status }}
-        </el-tag>
+  <el-table :data="rows" border>
+    <el-table-column prop="id" label="ID" width="80" />
+    <el-table-column prop="serial" label="Serial" />
+    <el-table-column prop="customer" label="Customer" />
+    <el-table-column prop="last" label="Last Heartbeat" width="200" />
+    <el-table-column label="Online" width="100">
+      <template #default="{ row }">
+        <el-tag :type="row.online ? 'success' : 'info'">{{ row.online ? 'Online' : 'Offline' }}</el-tag>
       </template>
     </el-table-column>
   </el-table>
 </template>
 
 <script>
-import { transactionList } from '@/api/remote-search'
-
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        success: 'success',
-        pending: 'danger'
-      }
-      return statusMap[status]
-    },
-    orderNoFilter(str) {
-      return str.substring(0, 30)
-    }
-  },
-  data() {
-    return {
-      list: null
-    }
-  },
-  created() {
-    this.fetchData()
-  },
-  methods: {
-    fetchData() {
-      transactionList().then(response => {
-        this.list = response.data.items.slice(0, 8)
-      })
-    }
-  }
+  name: 'TransactionTable',
+  props: { rows: { type: Array, default: () => [] }}
 }
 </script>

@@ -1,4 +1,3 @@
-// src/permission.js
 import router from '@/router'
 import store from '@/store'
 import { Message } from 'element-ui'
@@ -16,13 +15,13 @@ router.beforeEach(async(to, from, next) => {
     if (hasRoles) return next()
 
     try {
-      await store.dispatch('user/fetchMe') // sets roles
+      await store.dispatch('user/fetchMe') // sets roles from is_super_admin
       const roles = store.getters.roles
       const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-      router.addRoutes(accessRoutes) // inject async routes
-      return next({ ...to, replace: true }) // ensure addRoutes is done
+      router.addRoutes(accessRoutes)
+      return next({ ...to, replace: true })
     } catch (e) {
-      Message.error('Failed to load profile, please login again.')
+      Message.error('Failed to load profile, please sign in again.')
       await store.dispatch('user/logout')
       return next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
     }

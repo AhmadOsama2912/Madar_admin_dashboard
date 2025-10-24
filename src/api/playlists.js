@@ -1,17 +1,112 @@
+// src/api/playlists.js
 import request from '@/utils/request'
 
-export const listPlaylists = (params) => request.get('/playlists', { params })
-export const createPlaylist = (data) => request.post('/playlists', data)
-export const updatePlaylist = (id, data) => request.patch(`/playlists/${id}`, data)
-export const deletePlaylist = (id) => request.delete(`/playlists/${id}`)
+// List playlists
+export function listPlaylists(params) {
+  return request({
+    url: '/playlists',
+    method: 'get',
+    params
+  })
+}
 
-// Actions
-export const publishPlaylist = (id) => request.post(`/playlists/${id}/publish`)
-export const setDefaultPlaylist = (id) => request.post(`/playlists/${id}/default`)
-export const refreshPlaylist = (id) => request.post(`/playlists/${id}/refresh`)
+// Show one playlist (includes items)
+export function showPlaylist(id) {
+  return request({
+    url: `/playlists/${id}`,
+    method: 'get'
+  })
+}
 
-// Items
-export const addPlaylistItem = (pid, data) => request.post(`/playlists/${pid}/items`, data)
-export const updatePlaylistItem = (pid, iid, data) => request.patch(`/playlists/${pid}/items/${iid}`, data)
-export const deletePlaylistItem = (pid, iid) => request.delete(`/playlists/${pid}/items/${iid}`)
-export const reorderPlaylistItems = (pid, data) => request.patch(`/playlists/${pid}/items/reorder`, data)
+// Create playlist
+export function createPlaylist(data) {
+  return request({
+    url: '/playlists',
+    method: 'post',
+    data
+  })
+}
+
+// Update playlist (rename, etc.)
+export function updatePlaylist(id, data) {
+  return request({
+    url: `/playlists/${id}`,
+    method: 'patch',
+    data
+  })
+}
+
+// Delete playlist
+export function deletePlaylist(id) {
+  return request({
+    url: `/playlists/${id}`,
+    method: 'delete'
+  })
+}
+
+// Publish playlist
+export function publishPlaylist(id) {
+  return request({
+    url: `/playlists/${id}/publish`,
+    method: 'post'
+  })
+}
+
+// Refresh content_version
+export function refreshPlaylistVersion(id) {
+  return request({
+    url: `/playlists/${id}/refresh`,
+    method: 'post'
+  })
+}
+
+// -------- Items --------
+
+// Add item (file or URL)
+// Accepts FormData with fields: type (image|video), file? or src, duration? (for images)
+export function createPlaylistItem(playlistId, formData) {
+  return request({
+    url: `/playlists/${playlistId}/items`,
+    method: 'post',
+    data: formData,
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+}
+
+// Update item (e.g., duration)
+export function updatePlaylistItem(playlistId, itemId, data) {
+  return request({
+    url: `/playlists/${playlistId}/items/${itemId}`,
+    method: 'patch',
+    data
+  })
+}
+
+// Delete item
+export function deletePlaylistItem(playlistId, itemId) {
+  return request({
+    url: `/playlists/${playlistId}/items/${itemId}`,
+    method: 'delete'
+  })
+}
+
+// Reorder items
+export function reorderPlaylistItems(playlistId, data) {
+  // data = { order: [ids...] }
+  return request({
+    url: `/playlists/${playlistId}/items/reorder`,
+    method: 'patch',
+    data
+  })
+}
+
+// (Optional) If another view imported this by mistake:
+export function listPlaylistItems(playlistId, params) {
+  // Not required by this page, but included to silence imports elsewhere.
+  // Prefer showPlaylist(playlistId) instead, which returns items.
+  return request({
+    url: `/playlists/${playlistId}`,
+    method: 'get',
+    params
+  })
+}
