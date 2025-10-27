@@ -1,41 +1,66 @@
 <template>
   <div class="app-container content-page">
-    <!-- Top bar -->
+    <!-- ======= TOP BAR ======= -->
     <div class="topbar">
-      <el-select
-        v-model="filters.customer_id"
-        filterable
-        clearable
-        placeholder="Select customer"
-        class="topbar-select"
-        @change="loadPlaylists"
-      >
-        <el-option
-          v-for="c in customers"
-          :key="c.id"
-          :label="c.name"
-          :value="c.id"
+      <div class="topbar__left">
+        <div class="brand-chip">
+          <span class="dot" />
+          <span class="brand-chip__text">Madar Content</span>
+        </div>
+
+        <el-select
+          v-model="filters.customer_id"
+          filterable
+          clearable
+          placeholder="Select customer"
+          class="topbar-select"
+          @change="loadPlaylists"
+        >
+          <el-option
+            v-for="c in customers"
+            :key="c.id"
+            :label="c.name"
+            :value="c.id"
+          />
+        </el-select>
+
+        <el-input
+          v-model.trim="draft.newPlaylistName"
+          placeholder="New playlist name"
+          class="ml-1 topbar-input"
+          @keyup.enter.native="createPlaylist"
         />
-      </el-select>
+        <el-button
+          type="primary"
+          class="ml-1"
+          :loading="creating"
+          @click="createPlaylist"
+        >
+          Create
+        </el-button>
+      </div>
 
-      <el-input
-        v-model.trim="draft.newPlaylistName"
-        placeholder="New playlist name"
-        class="ml-1 topbar-input"
-        @keyup.enter.native="createPlaylist"
-      />
-      <el-button type="primary" class="ml-1" :loading="creating" @click="createPlaylist">Create</el-button>
-
-      <div class="flex-spacer" />
-      <el-button icon="el-icon-refresh" :loading="loading.playlists" @click="loadPlaylists">Refresh</el-button>
+      <div class="topbar__right">
+        <el-button icon="el-icon-refresh" :loading="loading.playlists" @click="loadPlaylists">
+          Refresh
+        </el-button>
+      </div>
     </div>
 
+    <!-- ======= PLAYLISTS ======= -->
     <el-row :gutter="16">
       <el-col :span="24">
-        <div class="section-title">Playlists</div>
+        <div class="section-title">
+          Playlists
+          <span v-if="playlists.length" class="section-sub">({{ playlists.length }})</span>
+        </div>
 
         <div v-if="!playlists.length" class="empty">
-          No playlists yet — pick a customer (optional) and create one above.
+          <div class="empty__icon">
+            <i class="el-icon-video-camera" />
+          </div>
+          <div class="empty__title">No playlists yet</div>
+          <div class="empty__sub">Pick a customer (optional) and create a playlist above.</div>
         </div>
 
         <div v-else class="playlist-grid">
@@ -48,9 +73,14 @@
           >
             <!-- Cover / Carousel -->
             <div class="pl-cover">
-              <img v-if="coverImage(pl)" :src="coverImage(pl)" alt="" loading="lazy">
+              <img
+                v-if="coverImage(pl)"
+                :src="coverImage(pl)"
+                alt="cover"
+                loading="lazy"
+              >
               <div v-else class="pl-cover-fallback">
-                <!-- MADAR inline logo -->
+                <!-- Minimal Madar logo vibe -->
                 <svg viewBox="0 0 180 60" class="madar-logo">
                   <g>
                     <path d="M30 45 L40 15 L50 45" class="ml-stroke" />
@@ -71,15 +101,15 @@
                 <div class="pl-title" :title="pl.name">{{ pl.name }}</div>
                 <div class="pl-meta">
                   <span>{{ count(pl.items_count) }} items</span>
-                  <span class="dot">•</span>
+                  <span class="dot-sep">•</span>
                   <span>{{ timeAgo(pl.updated_at ? pl.updated_at : pl.created_at) }}</span>
                 </div>
               </div>
 
-              <!-- Carousel dots -->
+              <!-- Carousel dots (max 5) -->
               <div v-if="hasThumbs(pl)" class="pl-dots">
                 <span
-                  v-for="(_,i) in (pl._thumbs || []).slice(0,5)"
+                  v-for="(_, i) in (pl._thumbs || []).slice(0, 5)"
                   :key="i"
                   :class="['dot', (pl._carouselIdx || 0) === i ? 'active' : '']"
                 />
@@ -89,13 +119,20 @@
             <!-- Thumbs strip -->
             <div v-if="hasThumbs(pl) || pl.items_count" class="pl-thumbs">
               <div
-                v-for="(thumb, idx) in (pl._thumbs || []).slice(0,3)"
+                v-for="(thumb, idx) in (pl._thumbs || []).slice(0, 3)"
                 :key="idx"
                 class="thumb"
                 :title="thumb.type === 'image' ? 'Image' : 'Video'"
               >
-                <img v-if="thumb.type === 'image'" :src="resolveUrl(thumb.url)" alt="" loading="lazy">
-                <div v-else class="thumb-video"><i class="el-icon-video-play" /></div>
+                <img
+                  v-if="thumb.type === 'image'"
+                  :src="resolveUrl(thumb.url)"
+                  alt="thumb"
+                  loading="lazy"
+                >
+                <div v-else class="thumb-video">
+                  <i class="el-icon-video-play" />
+                </div>
               </div>
 
               <div v-if="count(pl.items_count) > 3" class="thumb more">
@@ -120,7 +157,7 @@
       </el-col>
     </el-row>
 
-    <!-- Items dialog (unchanged structurally) -->
+    <!-- ======= ITEMS DIALOG ======= -->
     <el-dialog
       :visible.sync="itemsDlg.open"
       :title="'Playlist: ' + (itemsDlg.playlist ? itemsDlg.playlist.name : '')"
@@ -130,7 +167,12 @@
       class="items-dialog"
     >
       <div class="items-toolbar">
-        <el-upload :auto-upload="false" :show-file-list="false" :on-change="onUploadChange" accept="image/*,video/*">
+        <el-upload
+          :auto-upload="false"
+          :show-file-list="false"
+          :on-change="onUploadChange"
+          accept="image/*,video/*"
+        >
           <el-button icon="el-icon-plus">Add File</el-button>
         </el-upload>
 
@@ -181,6 +223,7 @@
         </el-table-column>
 
         <el-table-column prop="type" label="Type" width="120" />
+
         <el-table-column label="Source">
           <template slot-scope="{ row }">
             <a :href="resolveUrl(row.src)" target="_blank" rel="noopener" class="mono">
@@ -192,7 +235,13 @@
         <el-table-column label="Duration" width="200">
           <template slot-scope="{ row }">
             <div v-if="row.type === 'image'">
-              <el-input-number v-model="row.duration" :min="1" :max="3600" :step="1" controls-position="right" />
+              <el-input-number
+                v-model="row.duration"
+                :min="1"
+                :max="3600"
+                :step="1"
+                controls-position="right"
+              />
               <span class="muted ml-1">sec</span>
             </div>
             <div v-else class="muted">video length</div>
@@ -201,15 +250,41 @@
 
         <el-table-column label="Order" width="140">
           <template slot-scope="{ $index }">
-            <el-button size="mini" icon="el-icon-arrow-up" :disabled="$index === 0" @click="moveItem($index, -1)" />
-            <el-button size="mini" icon="el-icon-arrow-down" :disabled="$index === items.length - 1" @click="moveItem($index, +1)" />
+            <el-button
+              size="mini"
+              icon="el-icon-arrow-up"
+              :disabled="$index === 0"
+              @click="moveItem($index, -1)"
+            />
+            <el-button
+              size="mini"
+              icon="el-icon-arrow-down"
+              :disabled="$index === items.length - 1"
+              @click="moveItem($index, +1)"
+            />
           </template>
         </el-table-column>
 
         <el-table-column label="Actions" width="160" fixed="right">
           <template slot-scope="{ row }">
-            <el-button size="mini" type="primary" plain :disabled="row.type !== 'image'" :loading="row._saving === true" @click="saveItem(row)">Save</el-button>
-            <el-button size="mini" type="danger" plain @click="deleteItem(row)">Delete</el-button>
+            <el-button
+              size="mini"
+              type="primary"
+              plain
+              :disabled="row.type !== 'image'"
+              :loading="row._saving === true"
+              @click="saveItem(row)"
+            >
+              Save
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              plain
+              @click="deleteItem(row)"
+            >
+              Delete
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -256,7 +331,6 @@ export default {
     this.loadPlaylists()
   },
   beforeDestroy() {
-    // تنظيف مؤقتات الكاروسيل
     (this.playlists || []).forEach(p => this.stopCarousel(p))
   },
   methods: {
@@ -274,16 +348,18 @@ export default {
       if (!src) return ''
       if (/^https?:\/\//i.test(src)) return src
       const normalized = String(src).replace(/^\//, '')
-      return `${MEDIA_HOST}/${normalized}`
+      return MEDIA_HOST + '/' + normalized
     },
 
     /* ---------- customers ---------- */
     async loadCustomers() {
       try {
         const res = await listCustomers({ page: 1, per_page: 100 })
-        const root = res?.data ?? res
-        this.customers = Array.isArray(root?.data) ? root.data : (Array.isArray(root) ? root : [])
-      } catch (e) { this.$message.error(this.err(e, 'Failed to load customers')) }
+        const root = res && res.data ? res.data : res
+        this.customers = Array.isArray(root && root.data) ? root.data : (Array.isArray(root) ? root : [])
+      } catch (e) {
+        this.$message.error(this.err(e, 'Failed to load customers'))
+      }
     },
 
     /* ---------- playlists ---------- */
@@ -293,13 +369,16 @@ export default {
         const params = { page: 1, per_page: 100 }
         if (this.filters.customer_id) params.customer_id = this.filters.customer_id
         const res = await listPlaylists(params)
-        const root = res?.data ?? res
-        const rows = Array.isArray(root?.data) ? root.data : (Array.isArray(root) ? root : [])
+        const root = res && res.data ? res.data : res
+        const rows = Array.isArray(root && root.data) ? root.data : (Array.isArray(root) ? root : [])
         rows.forEach(r => { r._thumbs = null; r._carouselIdx = 0; this.stopCarousel(r) })
         this.playlists = rows
       } catch (e) {
-        this.$message.error(this.err(e, 'Failed to load playlists')); this.playlists = []
-      } finally { this.loading.playlists = false }
+        this.$message.error(this.err(e, 'Failed to load playlists'))
+        this.playlists = []
+      } finally {
+        this.loading.playlists = false
+      }
     },
 
     async createPlaylist() {
@@ -311,32 +390,54 @@ export default {
         await apiCreatePlaylist(payload)
         this.draft.newPlaylistName = ''
         await this.loadPlaylists()
-      } catch (e) { this.$message.error(this.err(e, 'Failed to create playlist')) } finally { this.creating = false }
+      } catch (e) {
+        this.$message.error(this.err(e, 'Failed to create playlist'))
+      } finally {
+        this.creating = false
+      }
     },
 
     async renamePlaylist(pl) {
       try {
         const ret = await this.$prompt('New name', 'Rename playlist', { inputValue: pl.name })
-        if (!ret?.value) return
+        if (!ret || !ret.value) return
         await updatePlaylist(pl.id, { name: ret.value })
-        this.$message.success('Renamed'); await this.loadPlaylists()
-      } catch (e) { this.$message.error(this.err(e, 'Failed to rename playlist')) }
+        this.$message.success('Renamed')
+        await this.loadPlaylists()
+      } catch (e) {
+        this.$message.error(this.err(e, 'Failed to rename playlist'))
+      }
     },
 
     async publish(pl) {
-      try { await publishPlaylist(pl.id); this.$message.success('Published'); await this.loadPlaylists() } catch (e) { this.$message.error(this.err(e, 'Publish failed')) }
+      try {
+        await publishPlaylist(pl.id)
+        this.$message.success('Published')
+        await this.loadPlaylists()
+      } catch (e) {
+        this.$message.error(this.err(e, 'Publish failed'))
+      }
     },
 
     async setDefault(pl) {
-      try { await setDefaultPlaylist(pl.id); this.$message.success('Set as default'); await this.loadPlaylists() } catch (e) { this.$message.error(this.err(e, 'Failed to set default')) }
+      try {
+        await setDefaultPlaylist(pl.id)
+        this.$message.success('Set as default')
+        await this.loadPlaylists()
+      } catch (e) {
+        this.$message.error(this.err(e, 'Failed to set default'))
+      }
     },
 
     async removePlaylist(pl) {
       try {
-        await this.$confirm(`Delete playlist "${pl.name}"? This cannot be undone.`, 'Confirm', { type: 'warning' })
+        await this.$confirm('Delete this playlist? This cannot be undone.', 'Confirm', { type: 'warning' })
         await apiDeletePlaylist(pl.id)
-        this.$message.success('Deleted'); await this.loadPlaylists()
-      } catch (e) { this.$message.error(this.err(e, 'Failed to delete playlist')) }
+        this.$message.success('Deleted')
+        await this.loadPlaylists()
+      } catch (e) {
+        this.$message.error(this.err(e, 'Failed to delete playlist'))
+      }
     },
 
     async ensureThumbs(pl) {
@@ -344,11 +445,11 @@ export default {
       this.$set(pl, '_thumbsLoading', true)
       try {
         const res = await showPlaylist(pl.id)
-        const data = res?.data ?? res
-        const items = Array.isArray(data?.items) ? data.items : []
+        const data = res && res.data ? res.data : res
+        const items = Array.isArray(data && data.items) ? data.items : []
         const thumbs = []
-        for (const it of items) {
-          if (thumbs.length >= 5) break // نكتفي بأول 5 لواجهة الكاروسيل/الدوتس
+        for (let i = 0; i < items.length && thumbs.length < 5; i++) {
+          const it = items[i]
           thumbs.push({ type: it.type, url: it.src })
         }
         this.$set(pl, '_thumbs', thumbs)
@@ -359,18 +460,22 @@ export default {
       }
     },
 
-    hasThumbs(pl) { return !!(pl && pl._thumbs && pl._thumbs.length) },
+    hasThumbs(pl) {
+      return !!(pl && pl._thumbs && pl._thumbs.length)
+    },
 
     coverImage(pl) {
       if (!this.hasThumbs(pl)) return null
       const list = pl._thumbs.slice(0, 5)
       const idx = pl._carouselIdx || 0
       const t = list[idx]
-      // للغلاف نعرض الصور فقط، الفيديو يُتجاهَل (يمكن لاحقًا إضافة snapshot)
       return t && t.type === 'image' ? this.resolveUrl(t.url) : null
     },
 
-    onEnterCard(pl) { this.ensureThumbs(pl); this.startCarousel(pl) },
+    onEnterCard(pl) {
+      this.ensureThumbs(pl)
+      this.startCarousel(pl)
+    },
 
     startCarousel(pl) {
       if (!pl) return
@@ -392,28 +497,39 @@ export default {
     },
 
     /* ---------- items dialog ---------- */
-    async openItems(pl) { this.itemsDlg.playlist = pl; this.itemsDlg.open = true; await this.loadItems() },
+    async openItems(pl) {
+      this.itemsDlg.playlist = pl
+      this.itemsDlg.open = true
+      await this.loadItems()
+    },
 
     async loadItems() {
       if (!this.itemsDlg.playlist) { this.items = []; return }
       this.loading.items = true
       try {
         const res = await showPlaylist(this.itemsDlg.playlist.id)
-        const data = res?.data ?? res
-        const its = Array.isArray(data?.items) ? data.items : []
+        const data = res && res.data ? res.data : res
+        const its = Array.isArray(data && data.items) ? data.items : []
         this.items = its.map((it, i) => ({
-          id: it.id, type: it.type, src: it.src,
-          duration: it.duration || 8, sort: typeof it.sort === 'number' ? it.sort : i, _saving: false
+          id: it.id,
+          type: it.type,
+          src: it.src,
+          duration: it.duration || 8,
+          sort: typeof it.sort === 'number' ? it.sort : i,
+          _saving: false
         }))
         this.dirtyOrder = false
       } catch (e) {
-        this.$message.error(this.err(e, 'Failed to load items')); this.items = []
-      } finally { this.loading.items = false }
+        this.$message.error(this.err(e, 'Failed to load items'))
+        this.items = []
+      } finally {
+        this.loading.items = false
+      }
     },
 
     onUploadChange(file) {
-      const t = file?.raw?.type ?? ''
-      const type = t.startsWith('image') ? 'image' : 'video'
+      const t = file && file.raw && file.raw.type ? file.raw.type : ''
+      const type = t.indexOf('image') === 0 ? 'image' : 'video'
       this.uploadItem(file.raw, type)
     },
 
@@ -426,8 +542,13 @@ export default {
         fd.append('file', raw)
         if (type === 'image') fd.append('duration', '8')
         await createPlaylistItem(this.itemsDlg.playlist.id, fd)
-        this.$message.success('Item added'); await this.loadItems()
-      } catch (e) { this.$message.error(this.err(e, 'Upload failed')) } finally { this.creatingItem = false }
+        this.$message.success('Item added')
+        await this.loadItems()
+      } catch (e) {
+        this.$message.error(this.err(e, 'Upload failed'))
+      } finally {
+        this.creatingItem = false
+      }
     },
 
     async addUrl() {
@@ -443,7 +564,11 @@ export default {
         this.ui.addUrlOpen = false
         this.draft.url = { type: 'image', src: '', duration: 8 }
         await this.loadItems()
-      } catch (e) { this.$message.error(this.err(e, 'Add URL failed')) } finally { this.creatingItem = false }
+      } catch (e) {
+        this.$message.error(this.err(e, 'Add URL failed'))
+      } finally {
+        this.creatingItem = false
+      }
     },
 
     async saveItem(row) {
@@ -452,15 +577,22 @@ export default {
       try {
         await updatePlaylistItem(this.itemsDlg.playlist.id, row.id, { duration: row.duration })
         this.$message.success('Saved')
-      } catch (e) { this.$message.error(this.err(e, 'Save failed')) } finally { this.$set(row, '_saving', false) }
+      } catch (e) {
+        this.$message.error(this.err(e, 'Save failed'))
+      } finally {
+        this.$set(row, '_saving', false)
+      }
     },
 
     async deleteItem(row) {
       try {
         await this.$confirm('Delete this item?', 'Confirm', { type: 'warning' })
         await deletePlaylistItem(this.itemsDlg.playlist.id, row.id)
-        this.$message.success('Deleted'); await this.loadItems()
-      } catch (e) { this.$message.error(this.err(e, 'Failed to delete item')) }
+        this.$message.success('Deleted')
+        await this.loadItems()
+      } catch (e) {
+        this.$message.error(this.err(e, 'Failed to delete item'))
+      }
     },
 
     moveItem(index, delta) {
@@ -469,7 +601,7 @@ export default {
       const arr = this.items.slice()
       const it = arr.splice(index, 1)[0]
       arr.splice(ni, 0, it)
-      arr.forEach((item, i) => (item.sort = i))
+      arr.forEach((item, i) => { item.sort = i })
       this.items = arr
       this.dirtyOrder = true
     },
@@ -478,8 +610,11 @@ export default {
       try {
         const order = this.items.map(i => i.id)
         await reorderPlaylistItems(this.itemsDlg.playlist.id, { order })
-        this.$message.success('Order saved'); this.dirtyOrder = false
-      } catch (e) { this.$message.error(this.err(e, 'Failed to save order')) }
+        this.$message.success('Order saved')
+        this.dirtyOrder = false
+      } catch (e) {
+        this.$message.error(this.err(e, 'Failed to save order'))
+      }
     },
 
     async refreshVersion() {
@@ -487,17 +622,22 @@ export default {
       this.refreshing = true
       try {
         await refreshPlaylistVersion(this.itemsDlg.playlist.id)
-        this.$message.success('Version refreshed'); await this.loadPlaylists()
-      } catch (e) { this.$message.error(this.err(e, 'Failed to refresh version')) } finally { this.refreshing = false }
+        this.$message.success('Version refreshed')
+        await this.loadPlaylists()
+      } catch (e) {
+        this.$message.error(this.err(e, 'Failed to refresh version'))
+      } finally {
+        this.refreshing = false
+      }
     },
 
     err(e, fb) {
-      if (e?.response?.data) {
+      if (e && e.response && e.response.data) {
         if (e.response.data.message) return e.response.data.message
         const errs = e.response.data.errors
         if (errs) {
           const firstKey = Object.keys(errs)[0]
-          if (firstKey && errs[firstKey]?.[0]) return errs[firstKey][0]
+          if (firstKey && errs[firstKey] && errs[firstKey][0]) return errs[firstKey][0]
         }
       }
       return fb || 'Unexpected error'
@@ -507,62 +647,125 @@ export default {
 </script>
 
 <style scoped>
-/* Base / utilities */
-.content-page{ background:#fff; }
-.topbar{ display:flex; align-items:center; gap:8px; margin-bottom:12px; }
-.topbar-select{ width:320px; }
+/* ===== Madar DNA ===== */
+:root {
+  --madar-primary:#00a57a;
+  --madar-primary-2:#0ea5e9;
+  --madar-ink:#0f172a;
+  --madar-muted:#64748b;
+  --madar-border:#e7edf5;
+  --madar-card:#ffffff;
+  --madar-soft:#f7fafc;
+}
+
+.content-page{ background:#ffffff; }
+
+/* Topbar */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:10px 12px; background:#fff; border:1px solid var(--madar-border);
+  border-radius:14px; margin-bottom:14px;
+}
+.topbar__left{ display:flex; align-items:center; gap:8px; }
+.topbar__right{ display:flex; align-items:center; gap:8px; }
+.topbar-select{ width:320px; max-width: 40vw; }
 .topbar-input{ max-width:280px; }
-.flex-spacer{ flex:1; }
 .ml-1{ margin-left:8px; }
-.section-title{ font-weight:700; margin:6px 0 12px; }
-.mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; }
-.muted{ color:#909399; }
-.empty{ padding:16px; border:1px dashed #e5e7eb; border-radius:12px; color:#909399; text-align:center; background:#fafafa; }
+.flex-spacer{ flex:1; }
+
+/* Brand chip */
+.brand-chip{
+  display:flex; align-items:center; gap:8px;
+  border:1px solid #dbeafe; background:#eef6ff; color:#0b5394;
+  padding:6px 10px; border-radius:999px; font-weight:700;
+}
+.brand-chip .dot{
+  width:8px; height:8px; border-radius:50%; background:var(--madar-primary-2);
+  box-shadow:0 0 0 3px rgba(14,165,233,.15);
+}
+.brand-chip__text{ font-size:12px; }
+
+/* Section */
+.section-title{ font-weight:800; font-size:16px; color:var(--madar-ink); margin:6px 0 12px; }
+.section-sub{ color:var(--madar-muted); font-weight:600; font-size:12px; margin-left:4px; }
+
+/* Empty state */
+.empty{
+  padding:24px; border:1px dashed var(--madar-border); border-radius:14px; color:#6b7280;
+  text-align:center; background:#fafafa;
+}
+.empty__icon{ font-size:28px; color:var(--madar-primary) }
+.empty__title{ margin-top:8px; font-weight:800; color:var(--madar-ink) }
+.empty__sub{ font-size:12px; color:#6b7280 }
 
 /* Grid */
-.playlist-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:14px; }
+.playlist-grid{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:14px;
+}
 
 /* Card */
 .pl-card{
-  background:#fff; border:1px solid #e9eef5; border-radius:16px; overflow:hidden;
+  background:var(--madar-card); border:1px solid var(--madar-border); border-radius:16px; overflow:hidden;
   transition:box-shadow .18s ease, transform .06s ease, border-color .18s ease;
 }
-.pl-card:hover{ box-shadow:0 14px 34px rgba(17,24,39,.08); transform:translateY(-2px); border-color:#dbe4ee; }
+.pl-card:hover{
+  box-shadow:0 14px 34px rgba(17,24,39,.08);
+  transform:translateY(-2px);
+  border-color:#dbe4ee;
+}
 
 /* Cover */
 .pl-cover{ position:relative; width:100%; aspect-ratio:16/9; background:#0b1220; }
 @supports not (aspect-ratio:16/9){ .pl-cover::before{ content:""; display:block; padding-top:56.25%; } }
 .pl-cover img, .pl-cover-fallback{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 
-/* MADAR fallback */
+/* Fallback */
 .pl-cover-fallback{
   display:flex; align-items:center; justify-content:center;
   background:radial-gradient(120% 120% at 50% 0%, #0f1b2e 0%, #0b1220 55%, #070d16 100%);
 }
 .madar-logo{ width:54%; height:auto; }
-.madar-logo .ml-stroke{ fill:none; stroke:#00a57a; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
+.madar-logo .ml-stroke{ fill:none; stroke:var(--madar-primary); stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
 .madar-logo .ml-text{ fill:#d1fff0; font:700 22px "Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Arabic", sans-serif; letter-spacing:2px; }
 
 /* overlay + content */
-.pl-cover-overlay{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,.55) 100%); pointer-events:none; }
+.pl-cover-overlay{
+  position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.55) 100%);
+}
 .pl-cover-top{ position:absolute; top:10px; left:10px; right:10px; display:flex; gap:6px; }
 .pl-cover-bottom{ position:absolute; left:12px; right:12px; bottom:12px; }
-.pl-title{ color:#fff; font-weight:800; font-size:16px; line-height:1.25; text-shadow:0 1px 2px rgba(0,0,0,.4); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pl-title{
+  color:#fff; font-weight:900; font-size:16px; line-height:1.25;
+  text-shadow:0 1px 2px rgba(0,0,0,.4); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
 .pl-meta{ margin-top:4px; font-size:12px; color:#d1d5db; }
-.pl-meta .dot{ margin:0 6px; color:#bfc6d4; }
+.pl-meta .dot-sep{ margin:0 6px; color:#bfc6d4; }
 
 /* Carousel dots */
-.pl-dots{ position:absolute; left:12px; bottom:12px; transform:translateY(100%); display:flex; gap:6px; padding:8px 0; }
-.pl-dots .dot{ width:7px; height:7px; border-radius:999px; background:#cbd5e1; opacity:.6; transition:opacity .15s, transform .15s; }
-.pl-dots .dot.active{ opacity:1; transform:scale(1.2); background:#10b981; }
+.pl-dots{
+  position:absolute; left:12px; bottom:12px; transform:translateY(100%); display:flex; gap:6px; padding:8px 0;
+}
+.pl-dots .dot{
+  width:7px; height:7px; border-radius:999px; background:#cbd5e1; opacity:.6; transition:opacity .15s, transform .15s;
+}
+.pl-dots .dot.active{
+  opacity:1; transform:scale(1.2); background:var(--madar-primary);
+}
 
 /* Thumbs strip */
 .pl-thumbs{ display:flex; gap:8px; padding:10px 12px 0; }
-.thumb{ flex:0 0 auto; width:86px; height:56px; border-radius:10px; background:#f5f7fa; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid #eef0f3; transition:transform .12s, box-shadow .12s; }
+.thumb{
+  flex:0 0 auto; width:86px; height:56px; border-radius:10px; background:#f5f7fa;
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+  border:1px solid #eef0f3; transition:transform .12s, box-shadow .12s;
+}
 .thumb:hover{ transform:translateY(-1px); box-shadow:0 6px 14px rgba(17,24,39,.06); }
 .thumb img{ width:100%; height:100%; object-fit:cover; }
-.thumb-video{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#101827; color:#fff; }
-.thumb.more{ font-weight:700; background:#fff; color:#111827; border-style:dashed; }
+.thumb-video{
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#101827; color:#fff;
+}
+.thumb.more{ font-weight:800; background:#fff; color:#111827; border-style:dashed; }
 
 /* Actions */
 .pl-actions{
@@ -572,14 +775,22 @@ export default {
 .pl-actions .actions-left{ display:flex; gap:8px; flex-wrap:wrap; }
 .pl-actions .actions-right{ display:flex; gap:8px; }
 .pl-actions .el-button{ height:30px; line-height:30px; padding:0 12px; border-radius:8px; }
-.pl-actions .el-button.is-disabled, .pl-actions .el-button.is-disabled:hover{ opacity:.55; cursor:not-allowed; }
 .open-btn{ font-weight:700; box-shadow:0 6px 16px rgba(16,185,129,.18); }
 
-/* Items dialog helpers */
+/* Items dialog */
 .items-toolbar{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
 .url-form .row{ display:flex; gap:8px; margin-top:8px; }
 .url-form .actions{ margin-top:8px; text-align:right; }
 .url-type-select{ width:160px; }
-.preview{ width:110px; height:62px; border-radius:8px; background:#0b1220; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.preview{
+  width:110px; height:62px; border-radius:8px; background:#0b1220;
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+}
 .preview img{ width:100%; height:100%; object-fit:cover; }
+
+/* Typography / misc */
+.mono{
+  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.muted{ color:#909399; }
 </style>

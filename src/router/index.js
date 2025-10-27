@@ -7,15 +7,16 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /**
- * constantRoutes
- * routes that don’t require auth
+ * Routes that don’t require auth
  */
 export const constantRoutes = [
   {
     path: '/redirect',
     component: Layout,
     hidden: true,
-    children: [{ path: '/redirect/:path(.*)', component: () => import('@/views/redirect/index') }]
+    children: [
+      { path: '/redirect/:path(.*)', component: () => import('@/views/redirect/index') }
+    ]
   },
   {
     path: '/login',
@@ -30,6 +31,7 @@ export const constantRoutes = [
   { path: '/404', component: () => import('@/views/error-page/404'), hidden: true },
   { path: '/401', component: () => import('@/views/error-page/401'), hidden: true },
 
+  // Dashboard
   {
     path: '/',
     component: Layout,
@@ -37,13 +39,15 @@ export const constantRoutes = [
     children: [
       {
         path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
+        // if your dashboard lives at /views/dashboard/admin/index.vue, point to it:
+        component: () => import('@/views/dashboard/admin/index.vue'),
         name: 'Dashboard',
         meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
       }
     ]
   },
 
+  // Profile (always accessible via user menu)
   {
     path: '/profile',
     component: Layout,
@@ -61,25 +65,60 @@ export const constantRoutes = [
 ]
 
 /**
- * asyncRoutes
- * routes that need permission (filtered by meta.roles)
+ * Routes that require permissions (filtered by meta.roles or meta.abilities)
+ * Order: Screens → Content → Customers → Users → Packages → System Admins → 404
  */
 export const asyncRoutes = [
-  // System Admins (super admins only)
+  // Screens
   {
-    path: '/system-admins',
+    path: '/screens',
     component: Layout,
+    redirect: '/screens/all',
+    name: 'Screens',
+    meta: { title: 'Screens', icon: 'el-icon-monitor', roles: ['admin', 'superadmin'] },
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/system-admins/index.vue'),
-        name: 'SystemAdmins',
-        meta: { title: 'System Admins', icon: 'el-icon-s-custom', roles: ['superadmin'] }
+        path: 'all',
+        component: () => import('@/views/screens/All.vue'),
+        name: 'ScreensAll',
+        meta: { title: 'All Screens', roles: ['admin', 'superadmin'] }
+      },
+      {
+        path: 'enrollment-codes',
+        component: () => import('@/views/screens/EnrollmentCodes.vue'),
+        name: 'EnrollmentCodes',
+        meta: { title: 'Enrollment Codes', roles: ['admin', 'superadmin'], abilities: ['admin:manage'] }
       }
+      // If you add more (e.g., Details), keep child paths relative (no leading slash)
+      // {
+      //   path: 'details/:id(\\d+)',
+      //   component: () => import('@/views/screens/Details.vue'),
+      //   name: 'ScreenDetails',
+      //   meta: { title: 'Screen Details', roles: ['admin', 'superadmin'] },
+      //   hidden: true
+      // }
     ]
   },
 
-  // Customers (admins & superadmins)
+  // Content
+  {
+    path: '/content',
+    component: Layout,
+    redirect: '/content/playlists',
+    name: 'Content',
+    meta: { title: 'Content', icon: 'el-icon-video-camera', roles: ['admin', 'superadmin'] },
+    children: [
+      {
+        path: 'playlists',
+        component: () => import('@/views/content/Playlists.vue'),
+        name: 'Playlists',
+        meta: { title: 'Playlists', roles: ['admin', 'superadmin'] }
+      }
+      // Add media library, templates, etc. here later
+    ]
+  },
+
+  // Customers (superadmins only)
   {
     path: '/customers',
     component: Layout,
@@ -102,68 +141,54 @@ export const asyncRoutes = [
     ]
   },
 
-  // Packages (admins & superadmins)
-  {
-    path: '/packages',
-    component: Layout,
-    redirect: '/packages/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/packages/index.vue'),
-        name: 'Packages',
-        meta: { title: 'Packages', icon: 'el-icon-goods', roles: ['admin'] }
-      }
-    ]
-  },
-
   // Users (admins & superadmins)
   {
     path: '/users',
     component: Layout,
     redirect: '/users/index',
+    name: 'Users',
+    meta: { title: 'Users', icon: 'el-icon-user', roles: ['admin', 'superadmin'] },
     children: [
       {
         path: 'index',
         component: () => import('@/views/users/index.vue'),
         name: 'UserManagement',
-        meta: { title: 'User Management', icon: 'el-icon-user', roles: ['admin'] }
+        meta: { title: 'User Management', roles: ['admin', 'superadmin'] }
       }
     ]
   },
 
-  // Screens (admins & superadmins)
+  // Packages (admins & superadmins)
   {
-    path: '/screens',
+    path: '/packages',
     component: Layout,
-    redirect: '/screens/all',
-    name: 'Screens',
-    meta: { title: 'Screens', icon: 'el-icon-monitor', roles: ['admin'] },
+    redirect: '/packages/index',
+    name: 'PackagesRoot',
+    meta: { title: 'Packages', icon: 'el-icon-goods', roles: ['admin', 'superadmin'] },
     children: [
       {
-        path: 'Screens-main',
-        component: () => import('@/views/screens/All.vue'),
-        name: 'ScreensAll',
-        meta: { title: 'All Screens', roles: ['admin'] }
-      },
-      // {
-      //   path: 'pair-customer',
-      //   component: () => import('@/views/screens/PairCustomer.vue'),
-      //   name: 'ScreensPairCustomer',
-      //   meta: { title: 'Screens Pair Customer', roles: ['admin'] }
-      // },
-      {
-        path: 'enrollment-codes',
-        component: () => import('@/views/screens/EnrollmentCodes.vue'),
-        name: 'EnrollmentCodes',
-        meta: { title: 'Enrollment Codes', abilities: ['admin:manage'] }
-      },
-      {
-        path: '/content/playlists',
-        component: () => import('@/views/content/Playlists.vue'),
-        meta: { title: 'Playlists' }
+        path: 'index',
+        component: () => import('@/views/packages/index.vue'),
+        name: 'Packages',
+        meta: { title: 'Packages', roles: ['admin', 'superadmin'] }
       }
+    ]
+  },
 
+  // System Admins (superadmins only)
+  {
+    path: '/system-admins',
+    component: Layout,
+    redirect: '/system-admins/index',
+    name: 'SystemAdminsRoot',
+    meta: { title: 'System Admins', icon: 'el-icon-s-custom', roles: ['superadmin'] },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/system-admins/index.vue'),
+        name: 'SystemAdmins',
+        meta: { title: 'System Admins', roles: ['superadmin'] }
+      }
     ]
   },
 
