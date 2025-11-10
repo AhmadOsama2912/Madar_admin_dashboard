@@ -1,6 +1,7 @@
 <template>
   <div :class="{'show':show}" class="header-search">
     <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
+
     <el-select
       ref="headerSearchSelect"
       v-model="search"
@@ -8,12 +9,31 @@
       filterable
       default-first-option
       remote
-      placeholder="Search"
+      :placeholder="$t ? $t('app.search') : 'Search'"
       class="header-search-select"
       @change="change"
     >
       <el-option v-for="item in options" :key="item.path" :value="item" :label="item.title.join(' > ')" />
     </el-select>
+
+    <!-- language buttons -->
+    <div class="header-lang">
+      <button
+        class="lang-btn"
+        :class="{ active: currentLocale === 'ar' }"
+        aria-label="Arabic"
+        title="العربية"
+        @click.stop="switchTo('ar')"
+      >ع</button>
+
+      <button
+        class="lang-btn"
+        :class="{ active: currentLocale === 'en' }"
+        aria-label="English"
+        title="English"
+        @click.stop="switchTo('en')"
+      >EN</button>
+    </div>
   </div>
 </template>
 
@@ -22,6 +42,8 @@
 // make search results more in line with expectations
 import Fuse from 'fuse.js'
 import path from 'path'
+
+const STORAGE_KEY = 'madar_locale'
 
 export default {
   name: 'HeaderSearch',
@@ -37,6 +59,10 @@ export default {
   computed: {
     routes() {
       return this.$store.getters.permission_routes
+    },
+    currentLocale() {
+      // fallback to 'ar' if i18n isn't available for some reason
+      return (this.$i18n && this.$i18n.locale) ? this.$i18n.locale : (typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY)) || 'ar'
     }
   },
   watch: {
@@ -134,6 +160,36 @@ export default {
       } else {
         this.options = []
       }
+    },
+
+    // Language switching
+    switchTo(locale) {
+      if (!locale) return
+      if (this.$i18n) {
+        // change vue-i18n locale
+        this.$i18n.locale = locale
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, locale)
+      } catch (e) { /* ignore */ }
+
+      // immediately set document dir/lang and body class so layout flips instantly
+      try {
+        const dir = locale === 'ar' ? 'rtl' : 'ltr'
+        if (typeof document !== 'undefined' && document.documentElement) {
+          document.documentElement.setAttribute('dir', dir)
+          document.documentElement.setAttribute('lang', locale)
+        }
+        if (typeof document !== 'undefined' && document.body) {
+          document.body.classList.remove('rtl', 'ltr')
+          document.body.classList.add(dir)
+        }
+      } catch (e) {
+        console.error('Failed to set document language attributes', e)
+      }
+
+      // If you need to toggle other UI libs (Vuetify etc), do it here:
+      // if (this.$vuetify) this.$vuetify.rtl = (locale === 'ar')
     }
   }
 }
@@ -142,6 +198,9 @@ export default {
 <style lang="scss" scoped>
 .header-search {
   font-size: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 
   .search-icon {
     cursor: pointer;
@@ -175,6 +234,35 @@ export default {
       width: 210px;
       margin-left: 10px;
     }
+  }
+
+  /* language buttons */
+  .header-lang {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: 8px;
+  }
+
+  .lang-btn {
+    border: 0;
+    background: transparent;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  .lang-btn.active {
+    text-decoration: underline;
+    color: var(--el-color-primary, #409EFF);
+  }
+
+  /* if page is RTL, move the search box margins to look good */
+  html[dir="rtl"] &.show .header-search-select {
+    margin-left: 0;
+    margin-right: 10px;
   }
 }
 </style>

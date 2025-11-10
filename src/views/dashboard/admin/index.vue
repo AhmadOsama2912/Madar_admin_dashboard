@@ -1,24 +1,35 @@
 <template>
   <div class="madar-dash">
     <!-- ======= HEADER ======= -->
-    <div class="hero">
+    <div v-if="summary && summary.totals" class="hero">
       <div class="hero__left">
-        <!-- NOTE: img is NOT self-closed per vue/html-self-closing rule -->
         <img :src="logoSrc" alt="Madar" class="hero__logo">
         <div>
-          <div class="hero__title">Madar TV</div>
-          <div class="hero__subtitle">Digital signage & ads management dashboard</div>
+          <div class="hero__title">{{ $t('app.title') }}</div>
+          <div class="hero__subtitle">{{ $t('app.subtitle') }}</div>
         </div>
       </div>
       <div class="hero__chips">
-        <div class="chip"><span class="dot dot--on" /> Online <b>{{ fmt(summary.screens.online) }}</b></div>
-        <div class="chip"><span class="dot dot--off" /> Offline <b>{{ fmt(summary.screens.offline) }}</b></div>
-        <div class="chip"><i class="el-icon-video-camera" /> Published <b>{{ fmt(summary.totals.playlists_published) }}</b></div>
+        <div class="chip">
+          <span class="dot dot--on" />
+          <span>{{ $t('app.online') }}</span>
+          <b>{{ fmt(summary.screens.online) }}</b>
+        </div>
+        <div class="chip">
+          <span class="dot dot--off" />
+          <span>{{ $t('app.offline') }}</span>
+          <b>{{ fmt(summary.screens.offline) }}</b>
+        </div>
+        <div class="chip">
+          <i class="el-icon-video-camera" />
+          <span>{{ $t('app.published') }}</span>
+          <b>{{ fmt(summary.totals.playlists_published) }}</b>
+        </div>
       </div>
     </div>
 
     <!-- ======= KPIs ======= -->
-    <el-row :gutter="16" class="mb-3">
+    <el-row v-if="summary && summary.totals" :gutter="16" class="mb-3">
       <el-col v-for="k in kpis" :key="k.key" :xs="24" :sm="12" :md="6">
         <el-card class="kpi pro" :class="'kpi--' + k.key" shadow="never">
           <div class="kpi__wrap">
@@ -26,12 +37,11 @@
               <KpiIcon :name="k.icon" />
             </div>
             <div class="kpi__body">
-              <div class="kpi__label">{{ k.label }}</div>
+              <div class="kpi__label">{{ $t(k.label) }}</div>
               <div class="kpi__value">{{ fmt(k.value) }}</div>
-
               <div v-if="k.key === 'screens'" class="kpi__sub">
-                <span class="dot dot--on" /> {{ fmt(summary.screens.online) }} online ·
-                <span class="dot dot--off" /> {{ fmt(summary.screens.offline) }} offline
+                <span class="dot dot--on" /> {{ fmt(summary.screens.online) }} {{ $t('app.online') }} ·
+                <span class="dot dot--off" /> {{ fmt(summary.screens.offline) }} {{ $t('app.offline') }}
               </div>
               <div v-else class="kpi__sub">{{ k.sub }}</div>
             </div>
@@ -44,13 +54,13 @@
     <el-row :gutter="16" class="mb-3">
       <el-col :xs="24" :lg="12">
         <el-card class="panel" shadow="never">
-          <div class="panel__title">Online vs Offline</div>
+          <div class="panel__title">{{ $t('app.charts.onlineOffline') }}</div>
           <div ref="pieRef" class="chart" />
         </el-card>
       </el-col>
       <el-col :xs="24" :lg="12">
         <el-card class="panel" shadow="never">
-          <div class="panel__title">Top Customers by Screens</div>
+          <div class="panel__title">{{ $t('app.charts.topCustomers') }}</div>
           <div ref="barRef" class="chart" />
         </el-card>
       </el-col>
@@ -60,13 +70,13 @@
     <el-row :gutter="16" class="mb-3">
       <el-col :xs="24" :lg="12">
         <el-card class="panel" shadow="never">
-          <div class="panel__title">Operating System Split (latest)</div>
+          <div class="panel__title">{{ $t('app.charts.osSplit') }}</div>
           <div ref="osPieRef" class="chart" />
         </el-card>
       </el-col>
       <el-col :xs="24" :lg="12">
         <el-card class="panel" shadow="never">
-          <div class="panel__title">App Version Distribution (latest)</div>
+          <div class="panel__title">{{ $t('app.charts.appVersion') }}</div>
           <div ref="appBarRef" class="chart" />
         </el-card>
       </el-col>
@@ -76,21 +86,25 @@
     <el-row :gutter="16">
       <el-col :xs="24" :lg="12">
         <el-card class="panel" shadow="never">
-          <div class="panel__title">Licenses expiring soon (≤ {{ soonDays }} days)</div>
+          <div class="panel__title">
+            {{ $t('app.tables.licensesExpiring', { days: soonDays }) }}
+          </div>
           <el-table
             v-loading="loading.codes"
             :data="expiringSoon"
-            empty-text="No licenses near expiry"
+            :empty-text="$t('app.tables.noLicenses')"
             border
           >
-            <el-table-column prop="code" label="Code" width="140">
-              <template slot-scope="s"><el-tag size="small">{{ s.row.code }}</el-tag></template>
+            <el-table-column prop="code" :label="$t('app.tables.code')" width="140">
+              <template v-slot="s">
+                <el-tag size="small">{{ s.row.code }}</el-tag>
+              </template>
             </el-table-column>
-            <el-table-column prop="customer_name" label="Customer" />
-            <el-table-column prop="max_uses" label="Max" width="90" />
-            <el-table-column prop="used_count" label="Used" width="90" />
-            <el-table-column label="Expires" width="190">
-              <template slot-scope="s">{{ toLocal(s.row.expires_at) }}</template>
+            <el-table-column prop="customer_name" :label="$t('app.tables.customer')" />
+            <el-table-column prop="max_uses" :label="$t('app.tables.max')" width="90" />
+            <el-table-column prop="used_count" :label="$t('app.tables.used')" width="90" />
+            <el-table-column :label="$t('app.tables.expires')" width="190">
+              <template v-slot="s">{{ toLocal(s.row.expires_at) }}</template>
             </el-table-column>
           </el-table>
         </el-card>
@@ -98,27 +112,29 @@
 
       <el-col :xs="24" :lg="12">
         <el-card class="panel" shadow="never">
-          <div class="panel__title">Latest Screens (last 5)</div>
+          <div class="panel__title">{{ $t('app.tables.latestScreens') }}</div>
           <el-table
             v-loading="loading.screens"
             :data="latestScreens.slice(0, 5)"
-            empty-text="No screens yet"
+            :empty-text="$t('app.tables.noScreens')"
             border
           >
-            <el-table-column prop="serial_number" label="Serial / Label" min-width="220">
-              <template slot-scope="s">
+            <el-table-column prop="serial_number" :label="$t('app.tables.serialLabel')" min-width="220">
+              <template v-slot="s">
                 <div class="serial">{{ s.row.serial_number }}</div>
                 <div v-if="s.row.label" class="muted">{{ s.row.label }}</div>
               </template>
             </el-table-column>
-            <el-table-column prop="customer_name" label="Customer" min-width="200" />
-            <el-table-column label="Status" width="120" align="center">
-              <template slot-scope="s">
-                <el-tag :type="s.row.online ? 'success' : 'info'">{{ s.row.online ? 'Online' : 'Offline' }}</el-tag>
+            <el-table-column prop="customer_name" :label="$t('app.tables.customer')" min-width="200" />
+            <el-table-column :label="$t('app.tables.status')" width="120" align="center">
+              <template v-slot="s">
+                <el-tag :type="s.row.online ? 'success' : 'info'">
+                  {{ s.row.online ? $t('app.tables.online') : $t('app.tables.offline') }}
+                </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="Last Check-in" width="190">
-              <template slot-scope="s">{{ toLocal(s.row.last_check_in_at) }}</template>
+            <el-table-column :label="$t('app.tables.lastCheckin')" width="190">
+              <template v-slot="s">{{ toLocal(s.row.last_check_in_at) }}</template>
             </el-table-column>
           </el-table>
         </el-card>
@@ -186,28 +202,28 @@ export default {
         {
           key: 'screens',
           icon: 'screens',
-          label: 'Total Screens',
+          label: this.$t('app.kpis.screens'), // translated
           value: Number(this.summary.totals.screens || 0),
           sub: ''
         },
         {
           key: 'customers',
           icon: 'users',
-          label: 'Customers',
+          label: this.$t('app.kpis.customers'), // translated
           value: Number(this.summary.totals.customers || 0),
           sub: `Managers ${this.fmt(this.summary.totals.users.managers || 0)} · Supervisors ${this.fmt(this.summary.totals.users.supervisors || 0)}`
         },
         {
           key: 'packages',
           icon: 'box',
-          label: 'Packages',
+          label: this.$t('app.kpis.apps'), // translated
           value: Number(this.counts.packages || 0),
           sub: `Expiring ≤ ${this.soonDays}d: ${this.fmt(this.expiringSoon.length)}`
         },
         {
           key: 'content',
           icon: 'playlist',
-          label: 'Published Playlists',
+          label: this.$t('app.kpis.playlists'), // translated
           value: Number(this.summary.totals.playlists_published || 0),
           sub: `With ${this.fmt(this.summary.screens.with_playlist || 0)} · Without ${this.fmt(this.summary.screens.without_playlist || 0)}`
         }

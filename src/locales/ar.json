@@ -1,0 +1,340 @@
+{
+  "app": {
+    "menu": {
+      "dashboard": "لوحة التحكم",
+      "profile": "الملف الشخصي",
+      "screens": "الشاشات",
+      "all_screens": "جميع الشاشات",
+      "enrollment_codes": "رموز التسجيل",
+      "content": "المحتوى",
+      "playlists": "قوائم التشغيل",
+      "customers": "العملاء",
+      "all_customers": "جميع العملاء",
+      "create_customer": "إنشاء عميل",
+      "users": "المستخدمون",
+      "user_management": "إدارة المستخدمين",
+      "packages": "الحزم",
+      "system_admins": "مديرو النظام"
+    },
+    "title": "مدار تي في",
+    "subtitle": "لوحة تحكم لإدارة اللافتات الرقمية والإعلانات",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "published": "منشور",
+    "dashboard": "لوحة التحكم",
+    "settings": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "kpis": {
+      "screens": "الشاشات",
+      "playlists": "قوائم التشغيل",
+      "customers": "العملاء",
+      "apps": "التطبيقات"
+    },
+    "charts": {
+      "onlineOffline": "متصل مقابل غير متصل",
+      "topCustomers": "أفضل العملاء حسب عدد الشاشات",
+      "osSplit": "توزيع أنظمة التشغيل (الأحدث)",
+      "appVersion": "توزيع إصدارات التطبيق (الأحدث)"
+    },
+    "tables": {
+      "licensesExpiring": "تراخيص ستنتهي قريبًا (≤ {days} يومًا)",
+      "latestScreens": "أحدث الشاشات (آخر 5)",
+      "code": "الرمز",
+      "customer": "العميل",
+      "max": "الحد الأقصى",
+      "used": "مستخدم",
+      "expires": "تاريخ الانتهاء",
+      "serialLabel": "الرقم التسلسلي / الوسم",
+      "status": "الحالة",
+      "lastCheckin": "آخر تحقق",
+      "offline": "غير متصل",
+      "online": "متصل"
+    },
+    "onlineStatus": {
+      "online": "متصل",
+      "offline": "غير متصل"
+    },
+    "tv": {
+      "filters": {
+        "customer": "العميل",
+        "serial": "الرقم التسلسلي",
+        "status": "الحالة",
+        "registered_from": "مسجل منذ",
+        "to": "إلى",
+        "sort_by": "ترتيب حسب",
+        "dir": "الاتجاه",
+        "created": "تاريخ الإنشاء",
+        "serial_number": "الرقم التسلسلي",
+        "id": "المعرف",
+        "desc": "تنازلي",
+        "asc": "تصاعدي",
+        "filter": "تصفية",
+        "reset": "إعادة تعيين",
+        "refresh": "تحديث"
+      },
+      "status": {
+        "online": "متصل",
+        "offline": "غير متصل"
+      },
+      "tooltip": {
+        "copy_serial": "نسخ الرقم التسلسلي"
+      },
+      "empty": {
+        "no_tvs": "لا توجد شاشات بعد",
+        "create_code": "أنشئ رمز تسجيل وسجّل أول شاشة لديك.",
+        "create_code_button": "إنشاء رمز تسجيل"
+      },
+      "drawer": {
+        "title": "تفاصيل الشاشة",
+        "info": "معلومات الشاشة",
+        "id": "المعرف",
+        "customer": "العميل",
+        "serial": "الرقم التسلسلي",
+        "model": "الموديل",
+        "os": "النظام",
+        "app": "التطبيق",
+        "status": "الحالة",
+        "last_seen": "آخر ظهور",
+        "content": "إدارة المحتوى",
+        "current_playlist": "قائمة التشغيل الحالية",
+        "assign_playlist": "تعيين قائمة تشغيل",
+        "no_playlists": "لا توجد قوائم تشغيل متاحة",
+        "assign_push": "تعيين وإرسال",
+        "add_content": "إضافة محتوى جديد",
+        "edit_content": "تعديل المحتوى",
+        "assign_more": "المزيد",
+        "assign_company": "تعيين لشاشات الشركة",
+        "assign_all": "تعيين لكل الشاشات",
+        "broadcast_config": "بث الإعداد"
+      },
+      "meta": {
+        "license": "الترخيص"
+      },
+      "selected": "محدد"
+    }
+  },
+
+  "screens": {
+    "title": "الشاشات",
+    "all": "جميع الشاشات",
+    "create": "إضافة شاشة",
+    "edit": "تعديل الشاشة",
+    "details": "تفاصيل الشاشة",
+    "enrollment_codes": "رموز التسجيل"
+  },
+
+  "playlists": {
+    "all": "جميع قوائم التشغيل",
+    "create": "إضافة قائمة تشغيل",
+    "edit": "تعديل قائمة التشغيل",
+    "details": "تفاصيل قائمة التشغيل"
+  },
+
+  "contents": {
+    "all": "جميع المحتويات",
+    "create": "إضافة محتوى",
+    "edit": "تعديل المحتوى",
+    "details": "تفاصيل المحتوى"
+  },
+
+  "customers": {
+    "title": "العملاء",
+    "all": "جميع العملاء",
+    "create": "إضافة عميل",
+    "edit": "تعديل العميل",
+    "details": "تفاصيل العميل"
+  },
+
+  "reports": {
+    "all": "التقارير",
+    "screens": "تقارير الشاشات",
+    "playlists": "تقارير القوائم",
+    "usage": "تقارير الاستخدام"
+  },
+
+  "users": {
+    "title": "المستخدمون",
+    "all": "المستخدمون",
+    "create": "إضافة مستخدم",
+    "edit": "تعديل المستخدم",
+    "details": "تفاصيل المستخدم",
+    "management": "إدارة المستخدمين"
+  },
+
+  "packages": {
+    "title": "الحزم",
+    "all": "الحزم",
+    "create": "إضافة حزمة",
+    "edit": "تعديل الحزمة"
+  },
+
+  "licenses": {
+    "all": "التراخيص",
+    "create": "إضافة ترخيص",
+    "edit": "تعديل الترخيص"
+  },
+
+  "notifications": {
+    "all": "الإشعارات",
+    "create": "إرسال إشعار"
+  },
+
+  "logs": {
+    "all": "السجلات",
+    "system": "سجلات النظام",
+    "activity": "سجلات النشاط"
+  },
+
+  "system_admins": {
+    "title": "مديرو النظام"
+  },
+
+  "routes": {
+    "dashboard": "لوحة التحكم",
+    "profile": "الملف الشخصي",
+    "screens": {
+      "root": "الشاشات",
+      "all": "جميع الشاشات",
+      "enrollment_codes": "رموز التسجيل",
+      "details": "تفاصيل الشاشة"
+    },
+    "content": {
+    "brand": "محتوى مدار",
+    "create": "إنشاء",
+    "new_playlist_ph": "اسم قائمة تشغيل جديدة",
+    "select_customer": "اختر العميل",
+    "playlists": "قوائم التشغيل",
+    "items": "{n} عنصر",
+    "ago_s": "قبل {n}ث",
+    "ago_m": "قبل {n}د",
+    "ago_h": "قبل {n}س",
+    "ago_d": "قبل {n}ي",
+    "published": "منشور",
+    "default": "افتراضي",
+    "empty_title": "لا توجد قوائم بعد",
+    "empty_sub": "اختر عميلاً (اختياري) ثم أنشئ قائمة تشغيل من الأعلى.",
+    "btn": {
+      "refresh": "تحديث",
+      "rename": "إعادة تسمية",
+      "publish": "نشر",
+      "set_default": "تعيين كافتراضي",
+      "delete": "حذف",
+      "open": "فتح",
+      "add_file": "إضافة ملف",
+      "add_url": "إضافة رابط",
+      "cancel": "إلغاء",
+      "add": "إضافة",
+      "save": "حفظ",
+      "close": "إغلاق",
+      "save_order": "حفظ الترتيب",
+      "refresh_ver": "تحديث الإصدار"
+    },
+    "dlg": {
+      "title_prefix": "قائمة التشغيل: ",
+      "type": "النوع",
+      "preview": "معاينة",
+      "source": "المصدر",
+      "duration": "المدة",
+      "order": "الترتيب",
+      "actions": "الإجراءات",
+      "seconds": "ث",
+      "video_len": "مدة الفيديو",
+      "confirm_delete_item": "هل تريد حذف هذا العنصر؟",
+      "confirm_delete_pl": "هل تريد حذف هذه القائمة؟ لا يمكن التراجع.",
+      "rename_title": "إعادة تسمية قائمة التشغيل",
+      "rename_prompt": "اسم جديد"
+    },
+    "msg": {
+      "renamed": "تمت إعادة التسمية",
+      "published": "تم النشر",
+      "set_default": "تم التعين كافتراضي",
+      "deleted": "تم الحذف",
+      "item_added": "تمت إضافة العنصر",
+      "saved": "تم الحفظ",
+      "order_saved": "تم حفظ الترتيب",
+      "version_refreshed": "تم تحديث الإصدار",
+      "load_playlists_fail": "فشل تحميل القوائم",
+      "load_items_fail": "فشل تحميل العناصر",
+      "create_fail": "فشل إنشاء القائمة",
+      "rename_fail": "فشل إعادة التسمية",
+      "publish_fail": "فشل النشر",
+      "set_default_fail": "فشل التعيين كافتراضي",
+      "delete_fail": "فشل الحذف",
+      "upload_fail": "فشل رفع الملف",
+      "add_url_fail": "فشل إضافة الرابط",
+      "save_fail": "فشل الحفظ",
+      "save_order_fail": "فشل حفظ الترتيب",
+      "refresh_ver_fail": "فشل تحديث الإصدار"
+    }
+  },
+    "customers": {
+      "root": "العملاء",
+      "index": "جميع العملاء",
+      "create": "إنشاء عميل"
+    },
+    "users": {
+      "root": "المستخدمون",
+      "index": "إدارة المستخدمين"
+    },
+    "packages": {
+      "root": "الحزم",
+      "index": "الحزم"
+    },
+    "system_admins": {
+      "root": "مديرو النظام",
+      "index": "مديرو النظام"
+    }
+  },
+
+  "enroll": {
+    "create_title": "إنشاء رمز تسجيل",
+    "form": {
+      "customer": "العميل",
+      "customer_ph": "اختر العميل",
+      "max_uses": "الحد الأقصى للشاشات",
+      "max_hint": "عدد الشاشات التي يمكنها التسجيل بهذا الرمز.",
+      "license_days": "أيام الترخيص",
+      "lic_hint": "سيحصل كل جهاز على هذا العدد من الأيام.",
+      "expires_at": "تاريخ الانتهاء",
+      "expires_ph": "تاريخ انتهاء اختياري",
+      "note": "ملاحظة",
+      "note_ph": "ملاحظة اختيارية",
+      "create_btn": "إنشاء",
+      "reset_btn": "إعادة تعيين",
+      "errors": {
+        "customer": "العميل مطلوب",
+        "max": "الحد الأقصى للشاشات مطلوب",
+        "days": "أيام الترخيص مطلوبة"
+      }
+    },
+    "toolbar": {
+      "search_ph": "ابحث عن الرمز…",
+      "customer_ph": "العميل",
+      "search_btn": "بحث"
+    },
+    "table": {
+      "id": "المعرف",
+      "code": "الرمز",
+      "customer": "العميل",
+      "max": "الحد الأقصى للشاشات",
+      "used": "مستخدم",
+      "days": "الأيام",
+      "expires_at": "ينتهي في",
+      "created": "تاريخ الإنشاء"
+    },
+    "empty": {
+      "title": "لا توجد رموز تسجيل بعد",
+      "subtitle": "أنشئ رمزًا بالأعلى لتسجيل شاشات جديدة."
+    },
+    "msg": {
+      "created": "تم إنشاء الرمز",
+      "load_customers_fail": "فشل تحميل العملاء",
+      "load_fail": "فشل تحميل الرموز",
+      "create_fail": "فشل إنشاء الرمز",
+      "copied": "تم النسخ",
+      "copy_fail": "فشل النسخ"
+    }
+  }
+}

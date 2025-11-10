@@ -1,0 +1,340 @@
+{
+  "app": {
+    "menu": {
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "screens": "Screens",
+      "all_screens": "All Screens",
+      "enrollment_codes": "Enrollment Codes",
+      "content": "Content",
+      "playlists": "Playlists",
+      "customers": "Customers",
+      "all_customers": "All Customers",
+      "create_customer": "Create Customer",
+      "users": "Users",
+      "user_management": "User Management",
+      "packages": "Packages",
+      "system_admins": "System Admins"
+    },
+    "title": "Madar TV",
+    "subtitle": "Digital signage & ads management dashboard",
+    "online": "Online",
+    "offline": "Offline",
+    "published": "Published",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "profile": "Profile",
+    "login": "Login",
+    "logout": "Logout",
+    "kpis": {
+      "screens": "Screens",
+      "playlists": "Playlists",
+      "customers": "Customers",
+      "apps": "Apps"
+    },
+    "charts": {
+      "onlineOffline": "Online vs Offline",
+      "topCustomers": "Top Customers by Screens",
+      "osSplit": "Operating System Split (latest)",
+      "appVersion": "App Version Distribution (latest)"
+    },
+    "tables": {
+      "licensesExpiring": "Licenses expiring soon (≤ {days} days)",
+      "latestScreens": "Latest Screens (last 5)",
+      "code": "Code",
+      "customer": "Customer",
+      "max": "Max",
+      "used": "Used",
+      "expires": "Expires",
+      "serialLabel": "Serial / Label",
+      "status": "Status",
+      "lastCheckin": "Last Check-in",
+      "offline": "Offline",
+      "online": "Online"
+    },
+    "onlineStatus": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "tv": {
+      "filters": {
+        "customer": "Customer",
+        "serial": "Serial number",
+        "status": "Status",
+        "registered_from": "Registered from",
+        "to": "to",
+        "sort_by": "Sort by",
+        "dir": "Direction",
+        "created": "Created",
+        "serial_number": "Serial",
+        "id": "ID",
+        "desc": "Desc",
+        "asc": "Asc",
+        "filter": "Filter",
+        "reset": "Reset",
+        "refresh": "Refresh"
+      },
+      "status": {
+        "online": "Online",
+        "offline": "Offline"
+      },
+      "tooltip": {
+        "copy_serial": "Copy serial"
+      },
+      "empty": {
+        "no_tvs": "No TVs yet",
+        "create_code": "Create an enrollment code and register your first TV.",
+        "create_code_button": "Create Enrollment Code"
+      },
+      "drawer": {
+        "title": "TV Details",
+        "info": "TV Information",
+        "id": "ID",
+        "customer": "Customer",
+        "serial": "Serial",
+        "model": "Model",
+        "os": "OS",
+        "app": "App",
+        "status": "Status",
+        "last_seen": "Last seen",
+        "content": "Content Management",
+        "current_playlist": "Current Playlist",
+        "assign_playlist": "Assign Playlist",
+        "no_playlists": "No playlists available",
+        "assign_push": "Assign & Push",
+        "add_content": "Add New Content",
+        "edit_content": "Edit Content",
+        "assign_more": "More",
+        "assign_company": "Assign to company screens",
+        "assign_all": "Assign to all screens",
+        "broadcast_config": "Broadcast config"
+      },
+      "meta": {
+        "license": "License"
+      },
+      "selected": "selected"
+    }
+  },
+
+  "screens": {
+    "title": "Screens",
+    "all": "All Screens",
+    "create": "Add Screen",
+    "edit": "Edit Screen",
+    "details": "Screen Details",
+    "enrollment_codes": "Enrollment Codes"
+  },
+
+  "playlists": {
+    "all": "All Playlists",
+    "create": "Add Playlist",
+    "edit": "Edit Playlist",
+    "details": "Playlist Details"
+  },
+
+  "contents": {
+    "all": "All Contents",
+    "create": "Add Content",
+    "edit": "Edit Content",
+    "details": "Content Details"
+  },
+
+  "customers": {
+    "title": "Customers",
+    "all": "All Customers",
+    "create": "Add Customer",
+    "edit": "Edit Customer",
+    "details": "Customer Details"
+  },
+
+  "reports": {
+    "all": "Reports",
+    "screens": "Screens Reports",
+    "playlists": "Playlists Reports",
+    "usage": "Usage Reports"
+  },
+
+  "users": {
+    "title": "Users",
+    "all": "Users",
+    "create": "Add User",
+    "edit": "Edit User",
+    "details": "User Details",
+    "management": "User Management"
+  },
+
+  "packages": {
+    "title": "Packages",
+    "all": "Packages",
+    "create": "Add Package",
+    "edit": "Edit Package"
+  },
+
+  "licenses": {
+    "all": "Licenses",
+    "create": "Add License",
+    "edit": "Edit License"
+  },
+
+  "notifications": {
+    "all": "Notifications",
+    "create": "Send Notification"
+  },
+
+  "logs": {
+    "all": "Logs",
+    "system": "System Logs",
+    "activity": "Activity Logs"
+  },
+
+  "system_admins": {
+    "title": "System Admins"
+  },
+
+  "routes": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "screens": {
+      "root": "Screens",
+      "all": "All Screens",
+      "enrollment_codes": "Enrollment Codes",
+      "details": "Screen Details"
+    },
+"content": {
+    "brand": "Madar Content",
+    "create": "Create",
+    "new_playlist_ph": "New playlist name",
+    "select_customer": "Select customer",
+    "playlists": "Playlists",
+    "items": "{n} items",
+    "ago_s": "{n}s ago",
+    "ago_m": "{n}m ago",
+    "ago_h": "{n}h ago",
+    "ago_d": "{n}d ago",
+    "published": "Published",
+    "default": "Default",
+    "empty_title": "No playlists yet",
+    "empty_sub": "Pick a customer (optional) and create a playlist above.",
+    "btn": {
+      "refresh": "Refresh",
+      "rename": "Rename",
+      "publish": "Publish",
+      "set_default": "Set default",
+      "delete": "Delete",
+      "open": "Open",
+      "add_file": "Add File",
+      "add_url": "Add URL",
+      "cancel": "Cancel",
+      "add": "Add",
+      "save": "Save",
+      "close": "Close",
+      "save_order": "Save order",
+      "refresh_ver": "Refresh ver"
+    },
+    "dlg": {
+      "title_prefix": "Playlist: ",
+      "type": "Type",
+      "preview": "Preview",
+      "source": "Source",
+      "duration": "Duration",
+      "order": "Order",
+      "actions": "Actions",
+      "seconds": "sec",
+      "video_len": "video length",
+      "confirm_delete_item": "Delete this item?",
+      "confirm_delete_pl": "Delete this playlist? This cannot be undone.",
+      "rename_title": "Rename playlist",
+      "rename_prompt": "New name"
+    },
+    "msg": {
+      "renamed": "Renamed",
+      "published": "Published",
+      "set_default": "Set as default",
+      "deleted": "Deleted",
+      "item_added": "Item added",
+      "saved": "Saved",
+      "order_saved": "Order saved",
+      "version_refreshed": "Version refreshed",
+      "load_playlists_fail": "Failed to load playlists",
+      "load_items_fail": "Failed to load items",
+      "create_fail": "Failed to create playlist",
+      "rename_fail": "Failed to rename playlist",
+      "publish_fail": "Publish failed",
+      "set_default_fail": "Failed to set default",
+      "delete_fail": "Failed to delete playlist",
+      "upload_fail": "Upload failed",
+      "add_url_fail": "Add URL failed",
+      "save_fail": "Save failed",
+      "save_order_fail": "Failed to save order",
+      "refresh_ver_fail": "Failed to refresh version"
+    }
+  },
+    "customers": {
+      "root": "Customers",
+      "index": "All Customers",
+      "create": "Create Customer"
+    },
+    "users": {
+      "root": "Users",
+      "index": "User Management"
+    },
+    "packages": {
+      "root": "Packages",
+      "index": "Packages"
+    },
+    "system_admins": {
+      "root": "System Admins",
+      "index": "System Admins"
+    }
+  },
+
+  "enroll": {
+    "create_title": "Create Enrollment Code",
+    "form": {
+      "customer": "Customer",
+      "customer_ph": "Select customer",
+      "max_uses": "MAX Screen",
+      "max_hint": "How many screens can register with this code.",
+      "license_days": "License Days",
+      "lic_hint": "Each screen gets this many days.",
+      "expires_at": "Expires At",
+      "expires_ph": "Optional expiry",
+      "note": "Note",
+      "note_ph": "Optional note",
+      "create_btn": "Create",
+      "reset_btn": "Reset",
+      "errors": {
+        "customer": "Customer required",
+        "max": "MAX Screen required",
+        "days": "License days required"
+      }
+    },
+    "toolbar": {
+      "search_ph": "Search code…",
+      "customer_ph": "Customer",
+      "search_btn": "Search"
+    },
+    "table": {
+      "id": "ID",
+      "code": "Code",
+      "customer": "Customer",
+      "max": "MAX Screen",
+      "used": "Used",
+      "days": "Days",
+      "expires_at": "Expires At",
+      "created": "Created"
+    },
+    "empty": {
+      "title": "No enrollment codes yet",
+      "subtitle": "Create a code above to register new screens."
+    },
+    "msg": {
+      "created": "Code created",
+      "load_customers_fail": "Failed to load customers",
+      "load_fail": "Failed to load codes",
+      "create_fail": "Failed to create code",
+      "copied": "Copied",
+      "copy_fail": "Copy failed"
+    }
+  }
+}

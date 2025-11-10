@@ -2,9 +2,6 @@
 import request from '@/utils/request'
 
 /* ------------------------------- Helpers ------------------------------- */
-
-// Normalize common API response shapes to a flat array:
-//   [ ... ]  OR  { data:[ ... ] }  OR  { data:{ data:[ ... ] } }
 const pluckList = (resp) => {
   const root = resp && resp.data ? resp.data : resp
   if (Array.isArray(root)) return root
@@ -14,19 +11,16 @@ const pluckList = (resp) => {
 }
 
 /* --------------------------- Playlists (CRUD) --------------------------- */
-
-// List playlists (accepts params like customer_id, page/per_page, etc.)
 export const listPlaylists = (params) =>
   request({ url: '/playlists', method: 'get', params })
 
-// Try by customer; if backend ignores/errs, fallback to all; then filter client-side.
 export async function listPlaylistsForCustomer(customer_id) {
   try {
     const r1 = await listPlaylists({ customer_id, per_page: 500 })
     const a1 = pluckList(r1)
     if (a1.length) return a1
   } catch (_) {
-    // ignore and try fallback
+    console.warn('Failed to list playlists for customer, falling back to all playlists')
   }
 
   const r2 = await listPlaylists({ per_page: 500 })
@@ -42,63 +36,82 @@ export async function listPlaylistsForCustomer(customer_id) {
   return a2.filter(isSameOrGlobal)
 }
 
-// Show one playlist (includes items)
 export const showPlaylist = (id) =>
   request({ url: `/playlists/${id}`, method: 'get' })
 
-// Create playlist
 export const createPlaylist = (data) =>
   request({ url: '/playlists', method: 'post', data })
 
-// Update playlist
 export const updatePlaylist = (id, data) =>
   request({ url: `/playlists/${id}`, method: 'patch', data })
 
-// Delete playlist
 export const deletePlaylist = (id) =>
   request({ url: `/playlists/${id}`, method: 'delete' })
 
-// Publish playlist
 export const publishPlaylist = (id) =>
   request({ url: `/playlists/${id}/publish`, method: 'post' })
 
-// Set as default
 export const setDefaultPlaylist = (id) =>
   request({ url: `/playlists/${id}/default`, method: 'post' })
 
-// Refresh content_version
 export const refreshPlaylistVersion = (id) =>
   request({ url: `/playlists/${id}/refresh`, method: 'post' })
 
 /* ------------------------------- Items API ------------------------------ */
-
-// Add item (file or URL). You can pass a FormData directly, or a POJO and we’ll wrap it.
 export const createPlaylistItem = (playlistId, formOrData) => {
   let data = formOrData
-  let headers
   if (!(formOrData instanceof FormData)) {
     const fd = new FormData()
     Object.entries(formOrData || {}).forEach(([k, v]) => v != null && fd.append(k, v))
     data = fd
-    headers = { 'Content-Type': 'multipart/form-data' }
   }
-  return request({ url: `/playlists/${playlistId}/items`, method: 'post', data, headers })
+  return request({ url: `/playlists/${playlistId}/items`, method: 'post', data })
 }
 
-// Update item
 export const updatePlaylistItem = (playlistId, itemId, data) =>
   request({ url: `/playlists/${playlistId}/items/${itemId}`, method: 'patch', data })
 
-// Delete item
 export const deletePlaylistItem = (playlistId, itemId) =>
   request({ url: `/playlists/${playlistId}/items/${itemId}`, method: 'delete' })
 
-// Reorder items: data = { order: [id1, id2, ...] }
 export const reorderPlaylistItems = (playlistId, data) =>
   request({ url: `/playlists/${playlistId}/items/reorder`, method: 'patch', data })
 
-/* -------------- Optional alias used by some views ----------------------- */
-
-// Harmless alias to showPlaylist (kept for compatibility)
 export const listPlaylistItems = (playlistId, params) =>
   request({ url: `/playlists/${playlistId}`, method: 'get', params })
+
+/* --------------------------- Bulk screen assignment (Admin) --------------------------- */
+
+/**
+ * Assign playlist to selected screens
+ * body: { playlist_id, screen_ids: [] }
+ */
+export const assignPlaylistToScreensAdmin = (data) =>
+  request({ url: '/screens/playlist', method: 'patch', data })
+
+/**
+ * Assign playlist to all screens of a company
+ * body: { playlist_id }
+ */
+export const assignPlaylistToCompanyScreensAdmin = (customerId, data) =>
+  request({ url: `/companies/${customerId}/screens/playlist`, method: 'patch', data })
+
+/**
+ * Assign playlist to all screens globally
+ * body: { playlist_id }
+ */
+export const assignPlaylistToAllScreensAdmin = (data) =>
+  request({ url: '/screens/playlist/all', method: 'patch', data })
+
+/**
+ * Broadcast updated config to selected screens
+ * body: { screen_ids: [] } OR { all: true }
+ */
+export const broadcastScreensConfigAdmin = (data) =>
+  request({ url: '/screens/broadcast-config', method: 'post', data })
+
+/**
+ * Broadcast updated config to all screens in a company
+ */
+export const broadcastCompanyConfigAdmin = (customerId) =>
+  request({ url: `/companies/${customerId}/broadcast-config`, method: 'post' })
