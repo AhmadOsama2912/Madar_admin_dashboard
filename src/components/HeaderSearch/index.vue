@@ -1,39 +1,26 @@
 <template>
-  <div :class="{'show':show}" class="header-search">
-    <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
-
-    <el-select
-      ref="headerSearchSelect"
-      v-model="search"
-      :remote-method="querySearch"
-      filterable
-      default-first-option
-      remote
-      :placeholder="$t ? $t('app.search') : 'Search'"
-      class="header-search-select"
-      @change="change"
-    >
-      <el-option v-for="item in options" :key="item.path" :value="item" :label="item.title.join(' > ')" />
-    </el-select>
-
-    <!-- language buttons -->
-    <div class="header-lang">
-      <button
-        class="lang-btn"
-        :class="{ active: currentLocale === 'ar' }"
-        aria-label="Arabic"
-        title="العربية"
-        @click.stop="switchTo('ar')"
-      >ع</button>
-
-      <button
-        class="lang-btn"
-        :class="{ active: currentLocale === 'en' }"
-        aria-label="English"
-        title="English"
-        @click.stop="switchTo('en')"
-      >EN</button>
-    </div>
+  <div class="header-search">
+    <!-- Language dropdown -->
+    <el-dropdown trigger="click" @command="switchTo">
+      <span class="lang-trigger">
+        <span class="lang-icon">🌐</span>
+        <span class="lang-text">{{ currentLocaleLabel }}</span>
+        <i class="el-icon-arrow-down lang-caret" />
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item
+          v-for="item in langOptions"
+          :key="item.value"
+          :command="item.value"
+          :disabled="item.value === currentLocale"
+        >
+          <div class="lang-option">
+            <span class="lang-option-native">{{ item.native }}</span>
+            <span class="lang-option-code">{{ item.code }}</span>
+          </div>
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
   </div>
 </template>
 
@@ -62,7 +49,21 @@ export default {
     },
     currentLocale() {
       // fallback to 'ar' if i18n isn't available for some reason
-      return (this.$i18n && this.$i18n.locale) ? this.$i18n.locale : (typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY)) || 'ar'
+      return (this.$i18n && this.$i18n.locale)
+        ? this.$i18n.locale
+        : (typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY)) || 'ar'
+    },
+    // اللغات المتاحة
+    langOptions() {
+      return [
+        { value: 'ar', native: 'العربية', code: 'AR' },
+        { value: 'en', native: 'English', code: 'EN' }
+      ]
+    },
+    // النص اللي بيظهر في الـ trigger (حسب اللغة الحالية)
+    currentLocaleLabel() {
+      const found = this.langOptions.find(l => l.value === this.currentLocale)
+      return found ? found.native : this.currentLocale
     }
   },
   watch: {
@@ -188,8 +189,8 @@ export default {
         console.error('Failed to set document language attributes', e)
       }
 
-      // If you need to toggle other UI libs (Vuetify etc), do it here:
-      // if (this.$vuetify) this.$vuetify.rtl = (locale === 'ar')
+      // لو حابب تعمل refresh كامل عشان تضمن كل شيء ينقلب RTL/LTR:
+      // window.location.reload()
     }
   }
 }
@@ -197,72 +198,60 @@ export default {
 
 <style lang="scss" scoped>
 .header-search {
-  font-size: 0 !important;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  font-size: 0; // نخلي العناصر الداخلية تتحكم بالـ font-size
+}
 
-  .search-icon {
-    cursor: pointer;
-    font-size: 18px;
-    vertical-align: middle;
-  }
+/* زر تغيير اللغة (trigger) */
+.lang-trigger {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #dcdfe6;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: #606266;
+  transition: all .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
 
-  .header-search-select {
-    font-size: 18px;
-    transition: width 0.2s;
-    width: 0;
-    overflow: hidden;
-    background: transparent;
-    border-radius: 0;
-    display: inline-block;
-    vertical-align: middle;
+.lang-trigger:hover {
+  border-color: #c0c4cc;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
 
-    ::v-deep .el-input__inner {
-      border-radius: 0;
-      border: 0;
-      padding-left: 0;
-      padding-right: 0;
-      box-shadow: none !important;
-      border-bottom: 1px solid #d9d9d9;
-      vertical-align: middle;
-    }
-  }
+.lang-icon {
+  font-size: 14px;
+  margin-right: 6px;
+}
 
-  &.show {
-    .header-search-select {
-      width: 210px;
-      margin-left: 10px;
-    }
-  }
+.lang-text {
+  font-weight: 500;
+}
 
-  /* language buttons */
-  .header-lang {
-    display: inline-flex;
-    gap: 6px;
-    align-items: center;
-    margin-left: 8px;
-  }
+.lang-caret {
+  font-size: 12px;
+  margin-left: 4px;
+  color: #909399;
+}
 
-  .lang-btn {
-    border: 0;
-    background: transparent;
-    padding: 4px 8px;
-    cursor: pointer;
-    font-weight: 600;
-    border-radius: 4px;
-    font-size: 13px;
-  }
+/* عناصر القائمة داخل الـ dropdown */
+.lang-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 120px;
+}
 
-  .lang-btn.active {
-    text-decoration: underline;
-    color: var(--el-color-primary, #409EFF);
-  }
+.lang-option-native {
+  font-size: 13px;
+}
 
-  /* if page is RTL, move the search box margins to look good */
-  html[dir="rtl"] &.show .header-search-select {
-    margin-left: 0;
-    margin-right: 10px;
-  }
+.lang-option-code {
+  font-size: 11px;
+  color: #909399;
 }
 </style>

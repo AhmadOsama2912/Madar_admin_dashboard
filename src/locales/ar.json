@@ -144,7 +144,28 @@
     "all": "جميع العملاء",
     "create": "إضافة عميل",
     "edit": "تعديل العميل",
-    "details": "تفاصيل العميل"
+    "details": "تفاصيل العميل",
+    "search_placeholder": "ابحث عن الشركة / البريد الإلكتروني / الهاتف",
+    "id": "الرقم",
+    "logo": "الشعار",
+    "company": "الشركة",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "package": "الحزمة",
+    "screens": "الشاشات",
+    "created_at": "تاريخ الإنشاء",
+    "actions": "الإجراءات",
+    "create_title": "إنشاء عميل",
+    "edit_title": "تعديل عميل",
+    "delete_title": "حذف عميل",
+    "delete_confirm": "هل أنت متأكد من حذف هذا العميل؟",
+    "create_success": "تم إنشاء العميل بنجاح",
+    "update_success": "تم تحديث العميل بنجاح",
+    "delete_success": "تم حذف العميل بنجاح",
+    "load_fail": "فشل تحميل العملاء",
+    "empty": "لا يوجد عملاء.",
+    "refresh": "تحديث",
+    "select_package": "اختر الحزمة"
   },
 
   "reports": {
@@ -158,16 +179,62 @@
     "title": "المستخدمون",
     "all": "المستخدمون",
     "create": "إضافة مستخدم",
-    "edit": "تعديل المستخدم",
+    "edit": "تعديل مستخدم",
     "details": "تفاصيل المستخدم",
-    "management": "إدارة المستخدمين"
+    "management": "إدارة المستخدمين",
+    "search_placeholder": "ابحث عن اسم المستخدم / البريد الإلكتروني / الهاتف",
+    "id": "الرقم",
+    "name": "الاسم",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "role": "الدور",
+    "customer": "العميل",
+    "created_at": "تاريخ الإنشاء",
+    "actions": "الإجراءات",
+    "create_title": "إنشاء مستخدم",
+    "edit_title": "تعديل مستخدم",
+    "delete_title": "حذف مستخدم",
+    "delete_confirm": "هل أنت متأكد من حذف هذا المستخدم؟",
+    "create_success": "تم إنشاء المستخدم بنجاح",
+    "update_success": "تم تحديث المستخدم بنجاح",
+    "delete_success": "تم حذف المستخدم بنجاح",
+    "load_fail": "فشل تحميل المستخدمين",
+    "password_optional_hint": "اترك كلمة المرور فارغة للحفاظ عليها",
+    "roles": {
+      "manager": "مدير",
+      "supervisor": "مشرف"
+    },
+    "empty": "لا يوجد مستخدمون.",
+    "refresh": "تحديث",
+    "select_customer": "اختر العميل"
   },
 
   "packages": {
     "title": "الحزم",
     "all": "الحزم",
     "create": "إضافة حزمة",
-    "edit": "تعديل الحزمة"
+    "edit": "تعديل حزمة",
+    "search_placeholder": "ابحث عن الحزم",
+    "id": "الرقم",
+    "name": "الاسم",
+    "screens_limit": "حد الشاشات",
+    "managers": "المديرون",
+    "supervisors": "المشرفون",
+    "branches": "الفروع",
+    "price": "السعر",
+    "created_at": "تاريخ الإنشاء",
+    "actions": "الإجراءات",
+    "create_title": "إنشاء حزمة",
+    "edit_title": "تعديل حزمة",
+    "delete_title": "حذف حزمة",
+    "delete_confirm": "هل أنت متأكد من حذف هذه الحزمة؟",
+    "create_success": "تم إنشاء الحزمة بنجاح",
+    "update_success": "تم تحديث الحزمة بنجاح",
+    "delete_success": "تم حذف الحزمة بنجاح",
+    "load_fail": "فشل تحميل الحزم",
+    "empty": "لا توجد حزم.",
+    "refresh": "تحديث"
   },
 
   "licenses": {
@@ -188,10 +255,30 @@
   },
 
   "system_admins": {
-    "title": "مديرو النظام"
+    "title": "مديرو النظام",
+    "all": "مديرو النظام",
+    "create": "إضافة مدير",
+    "edit": "تعديل مدير",
+    "search_placeholder": "ابحث بالاسم / اسم المستخدم / البريد الإلكتروني",
+    "id": "الرقم",
+    "name": "الاسم",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "super_admin": "مشرف عام",
+    "actions": "الإجراءات",
+    "create_title": "إنشاء مدير",
+    "edit_title": "تعديل مدير",
+    "delete_title": "حذف مدير",
+    "delete_confirm": "هل أنت متأكد من حذف هذا المدير؟",
+    "create_success": "تم إنشاء المدير بنجاح",
+    "update_success": "تم تحديث المدير بنجاح",
+    "delete_success": "تم حذف المدير بنجاح",
+    "load_fail": "فشل تحميل المديرين",
+    "empty": "لا يوجد مديرين.",
+    "refresh": "تحديث"
   },
 
-  "routes": {
+  "_routes_old": {
     "dashboard": "لوحة التحكم",
     "profile": "الملف الشخصي",
     "screens": {
@@ -335,6 +422,155 @@
       "create_fail": "فشل إنشاء الرمز",
       "copied": "تم النسخ",
       "copy_fail": "فشل النسخ"
+    }
+  }
+  ,
+  "tags": {
+    "refresh": "تحديث",
+    "close": "إغلاق",
+    "close_others": "إغلاق الآخرين",
+    "close_all": "إغلاق الكل"
+  },
+  "common": {
+    "id": "الرقم",
+    "name": "الاسم",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "customer": "العميل",
+    "package": "الحزمة",
+    "role": "الدور",
+    "price": "السعر",
+    "branch": "الفروع",
+    "branches": "الفروع",
+    "supervisors": "المشرفون",
+    "managers": "المديرون",
+    "screens": "الشاشات",
+    "screens_limit": "حد الشاشات",
+    "created_at": "تاريخ الإنشاء",
+    "actions": "الإجراءات",
+    "search": "بحث",
+    "create": "إنشاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "refresh": "تحديث",
+    "yes": "نعم",
+    "no": "لا",
+    "password": "كلمة المرور",
+    "confirm_password": "تأكيد كلمة المرور",
+    "optional": "اختياري",
+    "select": "اختر",
+    "update": "تحديث",
+    "customer_name": "اسم العميل"
+  },
+  "validation": {
+    "required": "{field} مطلوب",
+    "invalid_email": "البريد الإلكتروني غير صالح",
+    "non_negative": "يجب أن يكون رقمًا غير سالب",
+    "min_length": "يجب ألا يقل عن {n} أحرف",
+    "password_mismatch": "كلمات المرور غير متطابقة"
+  },
+  "content": {
+    "brand": "محتوى مدار",
+    "create": "إنشاء",
+    "new_playlist_ph": "اسم قائمة تشغيل جديدة",
+    "select_customer": "اختر العميل",
+    "playlists": "قوائم التشغيل",
+    "items": "{n} عنصر",
+    "ago_s": "قبل {n}ث",
+    "ago_m": "قبل {n}د",
+    "ago_h": "قبل {n}س",
+    "ago_d": "قبل {n}ي",
+    "published": "منشور",
+    "default": "افتراضي",
+    "empty_title": "لا توجد قوائم بعد",
+    "empty_sub": "اختر عميلاً (اختياري) ثم أنشئ قائمة تشغيل من الأعلى.",
+    "btn": {
+      "refresh": "تحديث",
+      "rename": "إعادة تسمية",
+      "publish": "نشر",
+      "set_default": "تعيين كافتراضي",
+      "delete": "حذف",
+      "open": "فتح",
+      "add_file": "إضافة ملف",
+      "add_url": "إضافة رابط",
+      "cancel": "إلغاء",
+      "add": "إضافة",
+      "save": "حفظ",
+      "close": "إغلاق",
+      "save_order": "حفظ الترتيب",
+      "refresh_ver": "تحديث الإصدار"
+    },
+    "dlg": {
+      "title_prefix": "قائمة التشغيل: ",
+      "type": "النوع",
+      "preview": "معاينة",
+      "source": "المصدر",
+      "duration": "المدة",
+      "order": "الترتيب",
+      "actions": "الإجراءات",
+      "seconds": "ث",
+      "video_len": "مدة الفيديو",
+      "confirm_delete_item": "هل تريد حذف هذا العنصر؟",
+      "confirm_delete_pl": "هل تريد حذف هذه القائمة؟ لا يمكن التراجع.",
+      "rename_title": "إعادة تسمية قائمة التشغيل",
+      "rename_prompt": "اسم جديد",
+      "image": "صورة",
+      "video": "فيديو"
+    },
+    "msg": {
+      "renamed": "تمت إعادة التسمية",
+      "published": "تم النشر",
+      "set_default": "تم التعين كافتراضي",
+      "deleted": "تم الحذف",
+      "item_added": "تمت إضافة العنصر",
+      "saved": "تم الحفظ",
+      "order_saved": "تم حفظ الترتيب",
+      "version_refreshed": "تم تحديث الإصدار",
+      "load_playlists_fail": "فشل تحميل القوائم",
+      "load_items_fail": "فشل تحميل العناصر",
+      "create_fail": "فشل إنشاء القائمة",
+      "rename_fail": "فشل إعادة التسمية",
+      "publish_fail": "فشل النشر",
+      "set_default_fail": "فشل التعيين كافتراضي",
+      "delete_fail": "فشل الحذف",
+      "upload_fail": "فشل رفع الملف",
+      "add_url_fail": "فشل إضافة الرابط",
+      "save_fail": "فشل الحفظ",
+      "save_order_fail": "فشل حفظ الترتيب",
+      "refresh_ver_fail": "فشل تحديث الإصدار"
+    }
+  },
+  "routes": {
+    "dashboard": "لوحة التحكم",
+    "profile": "الملف الشخصي",
+    "screens": {
+      "root": "الشاشات",
+      "all": "جميع الشاشات",
+      "enrollment_codes": "رموز التسجيل"
+    },
+    "content": {
+      "root": "المحتوى",
+      "playlists": "قوائم التشغيل"
+    },
+    "customers": {
+      "root": "العملاء",
+      "index": "العملاء",
+      "create": "إنشاء عميل"
+    },
+    "users": {
+      "root": "المستخدمون",
+      "index": "المستخدمون"
+    },
+    "packages": {
+      "root": "الحزم",
+      "index": "الحزم"
+    },
+    "system_admins": {
+      "root": "مديرو النظام",
+      "index": "مديرو النظام"
     }
   }
 }

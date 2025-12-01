@@ -144,7 +144,29 @@
     "all": "All Customers",
     "create": "Add Customer",
     "edit": "Edit Customer",
-    "details": "Customer Details"
+    "details": "Customer Details",
+    "search_placeholder": "Search company / email / phone",
+    "id": "ID",
+    "logo": "Logo",
+    "company": "Company",
+    "email": "Email",
+    "phone": "Phone",
+    "package": "Package",
+    "screens": "Screens",
+    "created_at": "Created At",
+    "actions": "Actions",
+    "create_title": "Create Customer",
+    "edit_title": "Edit Customer",
+    "delete_title": "Delete Customer",
+    "delete_confirm": "Are you sure you want to delete this customer?",
+    "create_success": "Customer created successfully",
+    "update_success": "Customer updated successfully",
+    "delete_success": "Customer deleted successfully",
+    "load_fail": "Failed to load customers",
+    "empty": "No customers found.",
+    "refresh": "Refresh",
+    "select_package": "Select a package",
+    "note": "Note"
   },
 
   "reports": {
@@ -160,14 +182,60 @@
     "create": "Add User",
     "edit": "Edit User",
     "details": "User Details",
-    "management": "User Management"
+    "management": "User Management",
+    "search_placeholder": "Search username / email / phone",
+    "id": "ID",
+    "name": "Name",
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "customer": "Customer",
+    "created_at": "Created At",
+    "actions": "Actions",
+    "create_title": "Create User",
+    "edit_title": "Edit User",
+    "delete_title": "Delete User",
+    "delete_confirm": "Are you sure you want to delete this user?",
+    "create_success": "User created successfully",
+    "update_success": "User updated successfully",
+    "delete_success": "User deleted successfully",
+    "load_fail": "Failed to load users",
+    "password_optional_hint": "Leave password blank to keep unchanged",
+    "roles": {
+      "manager": "Manager",
+      "supervisor": "Supervisor"
+    },
+    "empty": "No users found.",
+    "refresh": "Refresh",
+    "select_customer": "Select customer"
   },
 
   "packages": {
     "title": "Packages",
     "all": "Packages",
     "create": "Add Package",
-    "edit": "Edit Package"
+    "edit": "Edit Package",
+    "search_placeholder": "Search packages",
+    "id": "ID",
+    "name": "Name",
+    "screens_limit": "Screens Limit",
+    "managers": "Managers",
+    "supervisors": "Supervisors",
+    "branches": "Branches",
+    "price": "Price",
+    "created_at": "Created At",
+    "actions": "Actions",
+    "create_title": "Create Package",
+    "edit_title": "Edit Package",
+    "delete_title": "Delete Package",
+    "delete_confirm": "Are you sure you want to delete this package?",
+    "create_success": "Package created successfully",
+    "update_success": "Package updated successfully",
+    "delete_success": "Package deleted successfully",
+    "load_fail": "Failed to load packages",
+    "empty": "No packages found.",
+    "refresh": "Refresh"
   },
 
   "licenses": {
@@ -188,10 +256,30 @@
   },
 
   "system_admins": {
-    "title": "System Admins"
+    "title": "System Admins",
+    "all": "System Admins",
+    "create": "Add Admin",
+    "edit": "Edit Admin",
+    "search_placeholder": "Search name / username / email",
+    "id": "ID",
+    "name": "Name",
+    "username": "Username",
+    "email": "Email",
+    "super_admin": "Super Admin",
+    "actions": "Actions",
+    "create_title": "Create Admin",
+    "edit_title": "Edit Admin",
+    "delete_title": "Delete Admin",
+    "delete_confirm": "Are you sure you want to delete this admin?",
+    "create_success": "Admin created successfully",
+    "update_success": "Admin updated successfully",
+    "delete_success": "Admin deleted successfully",
+    "load_fail": "Failed to load admins",
+    "empty": "No admins found.",
+    "refresh": "Refresh"
   },
 
-  "routes": {
+  "_routes_old": {
     "dashboard": "Dashboard",
     "profile": "Profile",
     "screens": {
@@ -334,7 +422,155 @@
       "load_fail": "Failed to load codes",
       "create_fail": "Failed to create code",
       "copied": "Copied",
-      "copy_fail": "Copy failed"
+    "copy_fail": "Copy failed"
+    }
+  },
+  "tags": {
+    "refresh": "Refresh",
+    "close": "Close",
+    "close_others": "Close Others",
+    "close_all": "Close All"
+  },
+  "common": {
+    "id": "ID",
+    "name": "Name",
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone",
+    "customer": "Customer",
+    "package": "Package",
+    "role": "Role",
+    "price": "Price",
+    "branch": "Branches",
+    "branches": "Branches",
+    "supervisors": "Supervisors",
+    "managers": "Managers",
+    "screens": "Screens",
+    "screens_limit": "Screens Limit",
+    "created_at": "Created At",
+    "actions": "Actions",
+    "search": "Search",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "refresh": "Refresh",
+    "yes": "Yes",
+    "no": "No",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "optional": "Optional",
+    "select": "Select",
+    "update": "Update",
+    "customer_name": "Customer Name"
+  },
+  "validation": {
+    "required": "{field} is required",
+    "invalid_email": "Invalid email",
+    "non_negative": "Must be a non-negative number",
+    "min_length": "Must be at least {n} characters",
+    "password_mismatch": "Passwords do not match"
+  },
+  "content": {
+    "brand": "Madar Content",
+    "create": "Create",
+    "new_playlist_ph": "New playlist name",
+    "select_customer": "Select customer",
+    "playlists": "Playlists",
+    "items": "{n} items",
+    "ago_s": "{n}s ago",
+    "ago_m": "{n}m ago",
+    "ago_h": "{n}h ago",
+    "ago_d": "{n}d ago",
+    "published": "Published",
+    "default": "Default",
+    "empty_title": "No playlists yet",
+    "empty_sub": "Pick a customer (optional) and create a playlist above.",
+    "btn": {
+      "refresh": "Refresh",
+      "rename": "Rename",
+      "publish": "Publish",
+      "set_default": "Set default",
+      "delete": "Delete",
+      "open": "Open",
+      "add_file": "Add File",
+      "add_url": "Add URL",
+      "cancel": "Cancel",
+      "add": "Add",
+      "save": "Save",
+      "close": "Close",
+      "save_order": "Save order",
+      "refresh_ver": "Refresh ver"
+    },
+    "dlg": {
+      "title_prefix": "Playlist: ",
+      "type": "Type",
+      "preview": "Preview",
+      "source": "Source",
+      "duration": "Duration",
+      "order": "Order",
+      "actions": "Actions",
+      "seconds": "sec",
+      "video_len": "video length",
+      "confirm_delete_item": "Delete this item?",
+      "confirm_delete_pl": "Delete this playlist? This cannot be undone.",
+      "rename_title": "Rename playlist",
+      "rename_prompt": "New name",
+      "image": "Image",
+      "video": "Video"
+    },
+    "msg": {
+      "renamed": "Renamed",
+      "published": "Published",
+      "set_default": "Set as default",
+      "deleted": "Deleted",
+      "item_added": "Item added",
+      "saved": "Saved",
+      "order_saved": "Order saved",
+      "version_refreshed": "Version refreshed",
+      "load_playlists_fail": "Failed to load playlists",
+      "load_items_fail": "Failed to load items",
+      "create_fail": "Failed to create playlist",
+      "rename_fail": "Failed to rename playlist",
+      "publish_fail": "Publish failed",
+      "set_default_fail": "Failed to set default",
+      "delete_fail": "Failed to delete playlist",
+      "upload_fail": "Upload failed",
+      "add_url_fail": "Add URL failed",
+      "save_fail": "Save failed",
+      "save_order_fail": "Failed to save order",
+      "refresh_ver_fail": "Failed to refresh version"
+    }
+  },
+  "routes": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "screens": {
+      "root": "Screens",
+      "all": "All Screens",
+      "enrollment_codes": "Enrollment Codes"
+    },
+    "content": {
+      "root": "Content",
+      "playlists": "Playlists"
+    },
+    "customers": {
+      "root": "Customers",
+      "index": "Customers",
+      "create": "Create Customer"
+    },
+    "users": {
+      "root": "Users",
+      "index": "Users"
+    },
+    "packages": {
+      "root": "Packages",
+      "index": "Packages"
+    },
+    "system_admins": {
+      "root": "System Admins",
+      "index": "System Admins"
     }
   }
 }

@@ -1,73 +1,115 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" :dir="isRTL ? 'rtl' : 'ltr'">
     <el-card shadow="never">
       <!-- Toolbar -->
       <div class="toolbar">
         <el-input
           v-model="q.keyword"
-          placeholder="Search name / username / email…"
+          :placeholder="$t('system_admins.search_placeholder')"
           clearable
           class="mr-2"
           style="max-width:320px"
           @keyup.enter.native="fetch"
         />
-        <el-button type="primary" icon="el-icon-search" @click="fetch">Search</el-button>
+        <el-button type="primary" @click="fetch">
+          {{ $t('common.search') }}
+        </el-button>
 
         <div class="flex-spacer" />
 
-        <!-- Create admin (HIDDEN if not allowed) -->
         <el-button
           v-if="canCreate"
           type="primary"
           icon="el-icon-plus"
           @click="openCreate"
         >
-          Create Admin
+          {{ $t('system_admins.create_title') }}
         </el-button>
       </div>
 
       <!-- Table -->
-      <el-table v-loading="loading" :data="rows" border>
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="Name" />
-        <el-table-column prop="username" label="Username" width="160" />
-        <el-table-column prop="email" label="Email" width="240" />
-        <el-table-column label="Super Admin" width="140">
+      <el-table
+        v-loading="loading"
+        :data="rows"
+        border
+        style="width: 100%"
+      >
+        <!-- ID Column (بدون fixed) -->
+        <el-table-column
+          prop="id"
+          :label="$t('common.id')"
+          width="80"
+          align="center"
+        />
+
+        <!-- Name -->
+        <el-table-column
+          prop="name"
+          :label="$t('common.name')"
+          min-width="180"
+        />
+
+        <!-- Username -->
+        <el-table-column
+          prop="username"
+          :label="$t('common.username')"
+          min-width="160"
+        />
+
+        <!-- Email -->
+        <el-table-column
+          prop="email"
+          :label="$t('common.email')"
+          min-width="220"
+        />
+
+        <!-- Super Admin -->
+        <el-table-column
+          prop="is_super_admin"
+          :label="$t('system_admins.super_admin')"
+          width="140"
+        >
           <template #default="{ row }">
             <el-tag :type="row.is_super_admin ? 'success' : 'info'">
-              {{ row.is_super_admin ? 'Yes' : 'No' }}
+              {{ row.is_super_admin ? $t('common.yes') : $t('common.no') }}
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column label="Actions" width="200" fixed="right">
+        <!-- Actions (بدون fixed) -->
+        <el-table-column
+          :label="$t('common.actions')"
+          width="200"
+          align="center"
+        >
           <template #default="{ row }">
-            <!-- Edit (HIDDEN if not allowed) -->
             <el-button
               v-if="canEdit(row)"
               size="mini"
               @click="openEdit(row)"
             >
-              Edit
+              {{ $t('common.edit') }}
             </el-button>
-
-            <!-- Delete (HIDDEN if not allowed) -->
             <el-button
               v-if="canDelete(row)"
               size="mini"
               type="danger"
               @click="remove(row)"
             >
-              Delete
+              {{ $t('common.delete') }}
             </el-button>
           </template>
         </el-table-column>
 
+        <!-- Empty state -->
         <template #empty>
-          <div class="empty">
-            <span>No admins found.</span>
-            <el-button type="text" @click="fetch">Refresh</el-button>
-          </div>
+          <el-empty :description="$t('system_admins.empty')">
+            <div class="mt-1">
+              <el-button type="text" @click="fetch">
+                {{ $t('common.refresh') }}
+              </el-button>
+            </div>
+          </el-empty>
         </template>
       </el-table>
 
@@ -84,19 +126,26 @@
       </div>
     </el-card>
 
-    <!-- Create / Edit dialog -->
+    <!-- Dialog -->
     <el-dialog
-      :title="dialogMode === 'create' ? 'Create Admin' : 'Edit Admin'"
+      :title="dialogMode === 'create'
+        ? $t('system_admins.create_title')
+        : $t('system_admins.edit_title')"
       :visible.sync="dialogVisible"
       width="520px"
       @closed="resetForm"
     >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
-        <el-form-item label="Name" prop="name">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="160px"
+      >
+        <el-form-item :label="$t('common.name')" prop="name">
           <el-input v-model.trim="form.name" autocomplete="off" />
         </el-form-item>
 
-        <el-form-item label="Username" prop="username">
+        <el-form-item :label="$t('common.username')" prop="username">
           <el-input
             v-model.trim="form.username"
             autocomplete="off"
@@ -104,7 +153,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="Email" prop="email">
+        <el-form-item :label="$t('common.email')" prop="email">
           <el-input
             v-model.trim="form.email"
             autocomplete="off"
@@ -113,21 +162,52 @@
         </el-form-item>
 
         <!-- Password required on create, optional on edit -->
-        <el-form-item label="Password" prop="password">
-          <el-input v-model="form.password" type="password" autocomplete="new-password" show-password />
-        </el-form-item>
-        <el-form-item label="Confirm Password" prop="password_confirmation">
-          <el-input v-model="form.password_confirmation" type="password" autocomplete="new-password" show-password />
+        <el-form-item :label="$t('common.password')" prop="password">
+          <el-input
+            v-model="form.password"
+            type="password"
+            autocomplete="new-password"
+            show-password
+          />
         </el-form-item>
 
-        <el-form-item label="Super Admin" prop="is_super_admin">
-          <el-switch v-model="form.is_super_admin" :active-value="true" :inactive-value="false" />
+        <el-form-item
+          :label="$t('common.confirm_password')"
+          prop="password_confirmation"
+        >
+          <el-input
+            v-model="form.password_confirmation"
+            type="password"
+            autocomplete="new-password"
+            show-password
+          />
+        </el-form-item>
+
+        <el-form-item
+          :label="$t('system_admins.super_admin')"
+          prop="is_super_admin"
+        >
+          <el-switch
+            v-model="form.is_super_admin"
+            :active-value="true"
+            :inactive-value="false"
+          />
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible=false">Cancel</el-button>
-        <el-button type="primary" :loading="submitting" @click="submit">Save</el-button>
+        <el-button @click="dialogVisible=false">
+          {{ $t('common.cancel') }}
+        </el-button>
+        <el-button
+          type="primary"
+          :loading="submitting"
+          @click="submit"
+        >
+          {{ dialogMode === 'create'
+            ? $t('common.create')
+            : $t('common.save') }}
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -140,35 +220,36 @@ import { listAdmins, createAdmin, updateAdmin, deleteAdmin } from '@/api/admins'
 export default {
   name: 'SystemAdmins',
   data() {
-    const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v || '')
-    const validateEmail = (_r, v, cb) => (validEmail(v) ? cb() : cb(new Error('Invalid email')))
+    const validateEmail = (_r, v, cb) => {
+      if (!v) return cb(new Error(this.$t('validation.required')))
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      return emailRegex.test(v) ? cb() : cb(new Error(this.$t('validation.invalid_email')))
+    }
     const validatePwd = (_r, v, cb) => {
       if (this.dialogMode === 'create') {
-        if (!v || v.length < 6) return cb(new Error('Min 6 characters'))
+        if (!v) return cb(new Error(this.$t('validation.required')))
+        if (v.length < 6) return cb(new Error(this.$t('validation.min_length', { n: 6 })))
       } else if (v && v.length < 6) {
-        return cb(new Error('Min 6 characters'))
+        return cb(new Error(this.$t('validation.min_length', { n: 6 })))
       }
       cb()
     }
     const validatePwdConfirm = (_r, v, cb) => {
       if (this.dialogMode === 'create' || this.form.password) {
-        if (!v) return cb(new Error('Please confirm password'))
-        if (v !== this.form.password) return cb(new Error('Passwords do not match'))
+        if (!v) return cb(new Error(this.$t('validation.password_mismatch')))
+        if (v !== this.form.password) return cb(new Error(this.$t('validation.password_mismatch')))
       }
       cb()
     }
-
     return {
       loading: false,
       submitting: false,
       rows: [],
       total: 0,
       q: { page: 1, per_page: 10, keyword: '' },
-
       dialogVisible: false,
-      dialogMode: 'create', // 'create' | 'edit'
+      dialogMode: 'create',
       editingId: null,
-
       form: {
         name: '',
         username: '',
@@ -178,29 +259,42 @@ export default {
         is_super_admin: false
       },
       rules: {
-        name: [{ required: true, message: 'Required', trigger: 'blur' }],
-        username: [{ required: true, message: 'Required', trigger: 'blur' }],
-        email: [{ required: true, validator: validateEmail, trigger: 'blur' }],
+        name: [{ required: true, message: this.$t('validation.required'), trigger: 'blur' }],
+        username: [{ required: true, message: this.$t('validation.required'), trigger: 'blur' }],
+        email: [{ validator: validateEmail, trigger: 'blur' }],
         password: [{ validator: validatePwd, trigger: 'blur' }],
         password_confirmation: [{ validator: validatePwdConfirm, trigger: 'blur' }]
       }
     }
   },
   computed: {
-    ...mapGetters(['admin', 'roles']), // ensure these getters exist in your store
-    // robust super-admin check (roles OR admin flag)
+    ...mapGetters(['admin', 'roles']),
     isSuperAdmin() {
       return (this.roles && this.roles.includes('superadmin')) || !!this.admin?.is_super_admin
     },
     myId() {
       return this.admin?.id || 0
     },
-    // permissions for UI
     canCreate() { return this.isSuperAdmin },
     canEdit() { return () => this.isSuperAdmin },
-    canDelete() { return (row) => this.isSuperAdmin && row.id !== this.myId }
+    canDelete() { return (row) => this.isSuperAdmin && row.id !== this.myId },
+    isRTL() {
+      if (this.$i18n && this.$i18n.locale) {
+        return this.$i18n.locale.startsWith('ar')
+      }
+      if (typeof window !== 'undefined') {
+        try {
+          return (localStorage.getItem('madar_locale') || 'en').startsWith('ar')
+        } catch (e) {
+          console.error(e)
+        }
+      }
+      return false
+    }
   },
-  created() { this.fetch() },
+  created() {
+    this.fetch()
+  },
   methods: {
     async fetch() {
       this.loading = true
@@ -209,18 +303,18 @@ export default {
         this.rows = res.data || res.items || []
         this.total = res?.meta?.total ?? res?.total ?? this.rows.length
       } catch (e) {
-        this.showError(e, 'Failed to load admins')
+        this.$message.error(this.extractErr(e, this.$t('system_admins.load_fail')))
       } finally {
         this.loading = false
       }
     },
-
     openCreate() {
       if (!this.canCreate) return
       this.dialogMode = 'create'
       this.editingId = null
       this.dialogVisible = true
       this.resetForm()
+      this.$nextTick(() => this.$refs.formRef?.clearValidate())
     },
     openEdit(row) {
       if (!this.canEdit(row)) return
@@ -248,65 +342,69 @@ export default {
       }
       this.$refs.formRef && this.$refs.formRef.resetFields()
     },
-
-    submit() {
+    async submit() {
       this.$refs.formRef.validate(async(valid) => {
         if (!valid) return
         this.submitting = true
         try {
           if (this.dialogMode === 'create') {
-            const payload = { ...this.form } // matches your request body
-            const res = await createAdmin(payload)
-            this.$message.success(res?.message || 'Admin created')
+            const res = await createAdmin({ ...this.form })
+            this.$message.success(res?.message || this.$t('system_admins.create_success'))
           } else {
-            const p = {
+            const payload = {
               name: this.form.name,
               is_super_admin: this.form.is_super_admin
             }
             if (this.form.password) {
-              p.password = this.form.password
-              p.password_confirmation = this.form.password_confirmation
+              payload.password = this.form.password
+              payload.password_confirmation = this.form.password_confirmation
             }
-            const res = await updateAdmin(this.editingId, p)
-            this.$message.success(res?.message || 'Admin updated')
+            const res = await updateAdmin(this.editingId, payload)
+            this.$message.success(res?.message || this.$t('system_admins.update_success'))
           }
           this.dialogVisible = false
           this.fetch()
         } catch (e) {
-          this.showError(e, 'Save failed')
+          this.$message.error(this.extractErr(e, this.$t('system_admins.save_fail') || 'Save failed'))
         } finally {
           this.submitting = false
         }
       })
     },
-
     async remove(row) {
       if (!this.canDelete(row)) return
       try {
-        await this.$confirm(`Delete admin "${row.name}"?`, 'Confirm', { type: 'warning' })
+        await this.$confirm(
+          this.$t('system_admins.delete_confirm', { name: row.name }),
+          this.$t('system_admins.delete_title'),
+          { type: 'warning' }
+        )
         await deleteAdmin(row.id)
-        this.$message.success('Admin deleted')
+        this.$message.success(this.$t('system_admins.delete_success'))
         this.fetch()
-      } catch (_) { /* canceled or failed */ }
+      } catch (_) {
+        console.log('Delete cancelled or failed')
+      }
     },
-
-    showError(err, fallback) {
-      // Show 403/422 nicely
-      const msg =
+    extractErr(err, fallback) {
+      return (
         err?.response?.data?.message ||
         (err?.response?.data?.errors && Object.values(err.response.data.errors)[0][0]) ||
         err?.message ||
         fallback
-      this.$message.error(msg)
+      )
     }
   }
 }
 </script>
 
 <style scoped>
-.toolbar{display:flex;align-items:center;margin-bottom:12px}
-.flex-spacer{flex:1}
-.mr-2{margin-right:8px}
-.pagination{margin-top:12px;text-align:right}
-.empty{padding:16px;color:#999}
+.toolbar { display: flex; align-items: center; margin-bottom: 12px; }
+.flex-spacer { flex: 1; }
+.mr-2 { margin-right: 8px; }
+.pagination { margin-top: 12px; text-align: right; }
+.mt-1 { margin-top: 8px; }
+[dir='rtl'] .toolbar { flex-direction: row-reverse; }
+[dir='rtl'] .mr-2 { margin-right: 0; margin-left: 8px; }
+[dir='rtl'] .pagination { text-align: left; }
 </style>

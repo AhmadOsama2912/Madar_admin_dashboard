@@ -103,7 +103,7 @@
                 v-for="(thumb, idx) in (pl._thumbs || []).slice(0, 3)"
                 :key="idx"
                 class="thumb"
-                :title="thumb.type === 'image' ? 'Image' : 'Video'"
+                :title="thumb.type === 'image' ? $t('content.dlg.image') : $t('content.dlg.video')"
               >
                 <img v-if="thumb.type === 'image'" :src="resolveUrl(thumb.url)" alt="thumb" loading="lazy">
                 <div v-else class="thumb-video"><i class="el-icon-video-play" /></div>

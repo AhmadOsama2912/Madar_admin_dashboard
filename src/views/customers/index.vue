@@ -1,13 +1,17 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" :dir="isRTL ? 'rtl' : 'ltr'">
     <el-card shadow="never">
-      <div class="header"><h3>Customers</h3></div>
+      <!-- Header -->
+      <div class="header">
+        <h3>{{ $t('customers.title') }}</h3>
+      </div>
 
+      <!-- Error alert -->
       <el-alert
         v-if="lastError"
+        :title="lastError"
         type="error"
         :closable="false"
-        :title="lastError"
         class="mb-2"
       />
 
@@ -15,72 +19,141 @@
       <div class="toolbar">
         <el-input
           v-model="q.q"
-          placeholder="Search company / email / phone…"
+          :placeholder="$t('customers.search_placeholder')"
           clearable
-          class="mr-2"
-          style="max-width:320px"
+          class="search-input"
           @keyup.enter.native="fetch"
         />
-        <el-button type="primary" icon="el-icon-search" @click="fetch">Search</el-button>
+        <el-button type="primary" @click="fetch">
+          {{ $t('common.search') }}
+        </el-button>
+
         <div class="flex-spacer" />
-        <el-button type="primary" icon="el-icon-plus" @click="openCreate">Create Customer</el-button>
+
+        <el-button type="primary" icon="el-icon-plus" @click="openCreate">
+          {{ $t('customers.create_title') }}
+        </el-button>
       </div>
 
       <!-- Table -->
-      <el-table v-loading="loading" :data="rows" border>
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column label="Logo" width="86">
-          <template slot-scope="scope">
+      <el-table
+        :key="tableKey"
+        v-loading="loading"
+        :data="rows"
+        border
+        style="width: 100%"
+      >
+        <!-- ID -->
+        <el-table-column
+          prop="id"
+          :label="$t('common.id')"
+          width="90"
+          align="center"
+        />
+
+        <!-- Logo -->
+        <el-table-column
+          :label="$t('customers.logo')"
+          width="100"
+          align="center"
+        >
+          <template slot-scope="{ row }">
             <el-avatar
-              v-if="scope.row.logo_url || scope.row.logo"
-              :src="scope.row.logo_url || scope.row.logo"
+              v-if="row.logo_url || row.logo"
+              :src="row.logo_url || row.logo"
               size="small"
               shape="square"
+              class="logo-avatar"
             />
             <span v-else class="muted">—</span>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="Company" min-width="180" />
-        <el-table-column prop="email" label="Email" min-width="220" />
-        <el-table-column prop="phone" label="Phone" min-width="140" />
 
-        <el-table-column label="Package" min-width="200">
-          <template slot-scope="scope">
+        <!-- Company Name -->
+        <el-table-column
+          prop="name"
+          :label="$t('customers.company')"
+          min-width="180"
+        />
+
+        <!-- Email -->
+        <el-table-column
+          prop="email"
+          :label="$t('customers.email')"
+          min-width="230"
+        />
+
+        <!-- Phone -->
+        <el-table-column
+          prop="phone"
+          :label="$t('customers.phone')"
+          min-width="160"
+        />
+
+        <!-- Package -->
+        <el-table-column
+          :label="$t('customers.package')"
+          min-width="200"
+        >
+          <template slot-scope="{ row }">
             <span>
-              {{ (scope.row.package && scope.row.package.name) || scope.row.package_name || '-' }}
+              {{ (row.package && row.package.name) || row.package_name || '-' }}
             </span>
-            <span v-if="pkgPrice(scope.row) !== null" class="muted">
-              — {{ formatPrice(pkgPrice(scope.row)) }}
+            <span v-if="pkgPrice(row) !== null" class="muted">
+              — {{ formatPrice(pkgPrice(row)) }}
             </span>
           </template>
         </el-table-column>
 
-        <el-table-column label="Screens" width="110">
-          <template slot-scope="scope">
-            {{ scope.row.screens_count != null ? scope.row.screens_count : '-' }}
+        <!-- Screens Count -->
+        <el-table-column
+          :label="$t('customers.screens')"
+          width="110"
+          align="center"
+        >
+          <template slot-scope="{ row }">
+            {{ row.screens_count != null ? row.screens_count : '-' }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="created_at" label="Created At" width="180" />
-
-        <el-table-column label="Actions" width="220" fixed="right">
-          <template slot-scope="scope">
-            <el-button size="mini" @click="openEdit(scope.row)">Edit</el-button>
-            <el-button size="mini" type="danger" @click="remove(scope.row)">Delete</el-button>
+        <!-- Created At -->
+        <el-table-column
+          prop="created_at"
+          :label="$t('common.created_at')"
+          width="200"
+        >
+          <template slot-scope="{ row }">
+            {{ formatDate(row.created_at) }}
           </template>
         </el-table-column>
 
-        <template slot="empty">
-          <el-empty description="No customers found">
-            <el-button size="mini" type="primary" @click="openCreate">Create customer</el-button>
-          </el-empty>
-        </template>
+        <!-- Actions -->
+        <el-table-column
+          class-name="actions-col"
+          :label="$t('common.actions')"
+          width="220"
+          align="center"
+        >
+          <template slot-scope="{ row }">
+            <el-button size="mini" @click="openEdit(row)">
+              {{ $t('common.edit') }}
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="remove(row)"
+            >
+              {{ $t('common.delete') }}
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
+      <!-- Pagination -->
       <div class="pagination">
         <el-pagination
           background
-          layout="prev, pager, next, total"
+          layout="total, prev, pager, next"
           :current-page.sync="q.page"
           :page-size="q.per_page"
           :total="total"
@@ -89,30 +162,41 @@
       </div>
     </el-card>
 
-    <!-- Create / Edit dialog -->
+    <!-- Create/Edit Dialog -->
     <el-dialog
-      :title="dialogMode === 'create' ? 'Create Customer' : 'Edit Customer'"
+      :title="dialogMode === 'create'
+        ? $t('customers.create_title')
+        : $t('customers.edit_title')"
       :visible.sync="dialogVisible"
       width="760px"
       @closed="resetForm"
     >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="160px" class="form">
-        <el-form-item label="Company Name" prop="name">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="160px"
+      >
+        <el-form-item :label="$t('customers.company')" prop="name">
           <el-input v-model.trim="form.name" autocomplete="off" />
         </el-form-item>
 
-        <el-form-item label="Email" prop="email">
+        <el-form-item :label="$t('customers.email')" prop="email">
           <el-input v-model.trim="form.email" autocomplete="off" />
         </el-form-item>
 
-        <el-form-item label="Phone" prop="phone">
-          <el-input v-model.trim="form.phone" autocomplete="off" placeholder="optional" />
+        <el-form-item :label="$t('customers.phone')" prop="phone">
+          <el-input
+            v-model.trim="form.phone"
+            autocomplete="off"
+            :placeholder="$t('common.optional')"
+          />
         </el-form-item>
 
-        <el-form-item label="Package" prop="package_id">
+        <el-form-item :label="$t('customers.package')" prop="package_id">
           <el-select
             v-model="form.package_id"
-            placeholder="Select a package"
+            :placeholder="$t('customers.select_package')"
             filterable
             :loading="loadingPackages"
             style="width:100%"
@@ -126,11 +210,16 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Note">
-          <el-input v-model.trim="form.note" type="textarea" :rows="3" placeholder="optional" />
+        <el-form-item :label="$t('customers.note')">
+          <el-input
+            v-model.trim="form.note"
+            type="textarea"
+            :rows="3"
+            :placeholder="$t('common.optional')"
+          />
         </el-form-item>
 
-        <el-form-item label="Logo">
+        <el-form-item :label="$t('customers.logo')">
           <el-upload
             class="logo-uploader"
             action=""
@@ -138,34 +227,57 @@
             :show-file-list="false"
             accept="image/*"
             :on-change="onLogoChange"
-            :on-remove="onLogoRemove"
           >
-            <el-button size="small" icon="el-icon-upload">Choose image</el-button>
-            <span v-if="form.logoFile" class="muted ml-1">{{ form.logoFile.name }}</span>
-            <span v-else class="muted ml-1">Max 2MB, JPG/PNG</span>
+            <el-button size="small" icon="el-icon-upload">
+              {{ $t('common.select') }}
+            </el-button>
+            <span v-if="form.logoFile" class="muted ml-1">
+              {{ form.logoFile.name }}
+            </span>
           </el-upload>
+
           <div v-if="previewLogo" class="logo-preview">
             <img :src="previewLogo" alt="logo">
-            <el-button size="mini" class="ml-1" @click="clearLogo">Clear</el-button>
+            <el-button size="mini" @click="clearLogo">
+              {{ $t('common.clear') }}
+            </el-button>
           </div>
         </el-form-item>
 
-        <el-form-item label="Meta (Key / Value)">
+        <el-form-item :label="$t('customers.meta')">
           <div class="meta-grid">
-            <div v-for="(kv, idx) in form.metaKVs" :key="idx" class="meta-row">
+            <div
+              v-for="(kv, idx) in form.metaKVs"
+              :key="idx"
+              class="meta-row"
+            >
               <el-input v-model="kv.key" placeholder="key" size="small" />
               <el-input v-model="kv.value" placeholder="value" size="small" />
-              <el-button icon="el-icon-delete" type="text" @click="removeKV(idx)" />
+              <el-button
+                icon="el-icon-delete"
+                type="text"
+                @click="removeKV(idx)"
+              />
             </div>
-            <el-button size="mini" icon="el-icon-plus" @click="addKV">Add</el-button>
+            <el-button size="mini" icon="el-icon-plus" @click="addKV">
+              {{ $t('common.add') }}
+            </el-button>
           </div>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible=false">Cancel</el-button>
-        <el-button type="primary" :loading="submitting" @click="submit">
-          {{ dialogMode === 'create' ? 'Create' : 'Save' }}
+        <el-button @click="dialogVisible = false">
+          {{ $t('common.cancel') }}
+        </el-button>
+        <el-button
+          type="primary"
+          :loading="submitting"
+          @click="submit"
+        >
+          {{ dialogMode === 'create'
+            ? $t('common.create')
+            : $t('common.save') }}
         </el-button>
       </span>
     </el-dialog>
@@ -173,45 +285,59 @@
 </template>
 
 <script>
-import { listCustomers, createCustomer, updateCustomer, deleteCustomer } from '@/api/customers'
+import {
+  listCustomers,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer
+} from '@/api/customers'
 import { listPackages } from '@/api/packages'
 
 export default {
   name: 'CustomersIndex',
   data() {
-    const validateEmail = (_r, v, cb) =>
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '')) ? cb() : cb(new Error('Valid email required'))
+    const validateEmail = (_r, v, cb) => {
+      if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v))) {
+        return cb(new Error(this.$t('validation.invalid_email')))
+      }
+      cb()
+    }
+
     return {
       loading: false,
-      submitting: false,
-      lastError: '',
+      loadingPackages: false,
       rows: [],
       total: 0,
-      q: { page: 1, per_page: 10, q: '' },
-
+      q: { page: 1, per_page: 15, q: '' },
+      packages: [],
+      lastError: '',
       dialogVisible: false,
       dialogMode: 'create',
       editingId: null,
-
+      submitting: false,
+      previewLogo: null,
       form: {
         name: '',
         email: '',
         phone: '',
         package_id: null,
         note: '',
-        logoFile: null, // File
-        metaKVs: [] // [{key:'', value:''}]
+        logoFile: null,
+        metaKVs: []
       },
       rules: {
-        name: [{ required: true, message: 'Company name is required', trigger: 'blur' }],
-        email: [{ required: true, validator: validateEmail, trigger: 'blur' }],
-        package_id: [{ required: true, message: 'Please choose a package', trigger: 'change' }]
-      },
-
-      packages: [],
-      loadingPackages: false,
-
-      previewLogo: ''
+        name: [{ required: true, message: this.$t('validation.required'), trigger: 'blur' }],
+        email: [{ validator: validateEmail, trigger: 'blur' }]
+      }
+    }
+  },
+  computed: {
+    isRTL() {
+      return this.$i18n?.locale?.startsWith('ar') ||
+        (typeof localStorage !== 'undefined' && (localStorage.getItem('madar_locale') || 'en').startsWith('ar'))
+    },
+    tableKey() {
+      return this.isRTL ? 'customers-rtl-v2' : 'customers-ltr-v2'
     }
   },
   created() {
@@ -219,35 +345,15 @@ export default {
     this.loadPackages()
   },
   methods: {
-    parseListResponse(payload) {
-      const candidates = [
-        payload,
-        payload && payload.data,
-        payload && payload.data && payload.data.data,
-        payload && payload.customers,
-        payload && payload.items,
-        payload && payload.results
-      ]
-      let rows = []
-      for (const c of candidates) { if (Array.isArray(c)) { rows = c; break } }
-      const total =
-        (payload && payload.meta && payload.meta.total) ||
-        payload?.total ||
-        (payload && payload.data && payload.data.meta && payload.data.meta.total) ||
-        (Array.isArray(rows) ? rows.length : 0)
-      return { rows: rows || [], total: Number(total) || 0 }
-    },
-
     async fetch() {
       this.loading = true
       this.lastError = ''
       try {
-        const payload = await listCustomers(this.q)
-        const { rows, total } = this.parseListResponse(payload)
-        this.rows = rows
-        this.total = total
+        const res = await listCustomers(this.q)
+        this.rows = res.data || res.items || []
+        this.total = res?.meta?.total ?? res?.total ?? this.rows.length
       } catch (e) {
-        this.lastError = this.errMsg(e, 'Failed to load customers')
+        this.lastError = this.extractErr(e, this.$t('customers.load_fail'))
       } finally {
         this.loading = false
       }
@@ -256,170 +362,184 @@ export default {
     async loadPackages() {
       this.loadingPackages = true
       try {
-        const per = 100
-        let page = 1
-        let all = []
-        // naive pagination (backend caps per_page<=100)
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          const res = await listPackages({ page, per_page: per })
-          const { rows, total } = this.parseListResponse(res)
-          if (Array.isArray(rows)) all = all.concat(rows)
-          if (!total || all.length >= total || !rows || rows.length < per) break
-          page++
-        }
-        this.packages = all
-      } catch (e) {
-        this.$message.error(this.errMsg(e, 'Failed to load packages'))
-      } finally {
+        const res = await listPackages({ page: 1, per_page: 999 })
+        this.packages = res.data || res.items || []
+      } catch (_) { /* ignore */ } finally {
         this.loadingPackages = false
       }
     },
 
-    /* ------------- Dialog actions ------------- */
+    pkgPrice(row) {
+      const p = row.package || {}
+      return p.price ?? row.price ?? null
+    },
+
     openCreate() {
       this.dialogMode = 'create'
       this.editingId = null
-      this.dialogVisible = true
       this.resetForm()
-      this.$nextTick(() => this.$refs.formRef && this.$refs.formRef.clearValidate())
+      this.dialogVisible = true
     },
+
     openEdit(row) {
       this.dialogMode = 'edit'
       this.editingId = row.id
-      this.dialogVisible = true
-
-      // map existing data to form
       this.form = {
         name: row.name || '',
         email: row.email || '',
         phone: row.phone || '',
-        package_id: row.package?.id ?? row.package_id ?? null,
+        package_id: row.package_id || (row.package && row.package.id) || null,
         note: row.note || '',
         logoFile: null,
-        metaKVs: this.toKVs(row.meta)
+        metaKVs: (row.meta && typeof row.meta === 'object')
+          ? Object.entries(row.meta).map(([key, value]) => ({ key, value: String(value) }))
+          : []
       }
-      this.previewLogo = row.logo_url || row.logo || ''
-      this.$nextTick(() => this.$refs.formRef && this.$refs.formRef.clearValidate())
-    },
-    resetForm() {
-      this.form = { name: '', email: '', phone: '', package_id: null, note: '', logoFile: null, metaKVs: [] }
-      this.previewLogo = ''
-      if (this.$refs.formRef) this.$refs.formRef.resetFields()
-      this.submitting = false
+      this.previewLogo = row.logo_url || row.logo || null
+      this.dialogVisible = true
     },
 
-    /* ------------- Logo handling ------------- */
+    resetForm() {
+      this.form = {
+        name: '', email: '', phone: '', package_id: null, note: '', logoFile: null, metaKVs: []
+      }
+      this.previewLogo = null
+      this.$nextTick(() => {
+        this.$refs.formRef?.resetFields()
+        this.$refs.formRef?.clearValidate()
+      })
+    },
+
     onLogoChange(file) {
-      this.form.logoFile = file.raw || file
-      // preview
-      if (this.form.logoFile) this.previewLogo = URL.createObjectURL(this.form.logoFile)
+      this.form.logoFile = file.raw
+      const reader = new FileReader()
+      // reader.onload = e => this.previewLogo = e.target.result
+      reader.readAsDataURL(file.raw)
     },
-    onLogoRemove() {
-      this.clearLogo()
-    },
+
     clearLogo() {
       this.form.logoFile = null
-      this.previewLogo = ''
+      this.previewLogo = null
     },
 
-    /* ------------- Meta KV editor ------------- */
-    addKV() { this.form.metaKVs.push({ key: '', value: '' }) },
-    removeKV(i) { this.form.metaKVs.splice(i, 1) },
-    toKVs(meta) {
-      const arr = []
-      if (meta && typeof meta === 'object') {
-        Object.keys(meta).forEach(k => arr.push({ key: k, value: String(meta[k]) }))
-      }
-      return arr
-    },
-    appendMetaToFormData(fd) {
-      for (const { key, value } of this.form.metaKVs) {
-        if (key && key.trim() !== '') {
-          fd.append(`meta[${key}]`, value == null ? '' : value)
-        }
-      }
+    async remove(row) {
+      try {
+        await this.$confirm(this.$t('customers.delete_confirm'), this.$t('customers.delete_title'), { type: 'warning' })
+        await deleteCustomer(row.id)
+        this.$message.success(this.$t('customers.delete_success'))
+        if (this.rows.length === 1 && this.q.page > 1) this.q.page--
+        this.fetch()
+      } catch (_) { /* cancelled */ }
     },
 
-    /* ------------- Submit create/update ------------- */
-    submit() {
-      this.$refs.formRef.validate(async(valid) => {
+    async submit() {
+      this.$refs.formRef.validate(async valid => {
         if (!valid) return
         this.submitting = true
         try {
-          const fd = new FormData()
-          fd.append('name', this.form.name)
-          fd.append('email', this.form.email)
-          if (this.form.phone) fd.append('phone', this.form.phone)
-          if (this.form.note) fd.append('note', this.form.note)
-          fd.append('package_id', this.form.package_id)
-          if (this.form.logoFile) fd.append('logo', this.form.logoFile)
-          this.appendMetaToFormData(fd)
+          const payload = {
+            name: this.form.name,
+            email: this.form.email,
+            phone: this.form.phone || null,
+            package_id: this.form.package_id,
+            note: this.form.note || null,
+            meta: this.safeMeta()
+          }
+          if (this.form.logoFile) payload.logo = this.form.logoFile
 
           if (this.dialogMode === 'create') {
-            const res = await createCustomer(fd) // POST multipart
-            this.$message.success(res?.message || 'Customer created')
+            await createCustomer(payload)
+            this.$message.success(this.$t('customers.create_success'))
           } else {
-            // Laravel accepts multipart PATCH; if your server doesn’t, switch to POST + _method
-            const res = await updateCustomer(this.editingId, fd)
-            this.$message.success(res?.message || 'Customer updated')
+            await updateCustomer(this.editingId, payload)
+            this.$message.success(this.$t('customers.update_success'))
           }
+
           this.dialogVisible = false
           this.fetch()
         } catch (e) {
-          this.$message.error(this.errMsg(e, 'Save failed'))
+          this.$message.error(this.extractErr(e, this.$t('customers.save_fail')))
         } finally {
           this.submitting = false
         }
       })
     },
 
-    async remove(row) {
-      try {
-        await this.$confirm(`Delete customer "${row.name}"?`, 'Confirm', { type: 'warning' })
-        await deleteCustomer(row.id)
-        this.$message.success('Customer deleted')
-        if (this.rows.length === 1 && this.q.page > 1) this.q.page -= 1
-        this.fetch()
-      } catch (_) {
-        console.log('Delete cancelled')
-      }
+    addKV() { this.form.metaKVs.push({ key: '', value: '' }) },
+    removeKV(i) { this.form.metaKVs.splice(i, 1) },
+    safeMeta() {
+      const meta = {}
+      this.form.metaKVs.forEach(({ key, value }) => { if (key.trim()) meta[key.trim()] = value })
+      return Object.keys(meta).length ? meta : null
     },
 
-    /* ------------- helpers ------------- */
-    pkgPrice(row) {
-      if (row?.package?.price != null) return row.package.price
-      if (row?.package_price != null) return row.package_price
-      return null
-    },
-    formatPrice(p) {
-      const n = Number(p)
-      return Number.isFinite(n) ? n.toLocaleString() : (p == null ? '-' : p)
-    },
-    errMsg(err, fallback) {
-      return (
-        err?.response?.data?.message ||
+    extractErr(err, fallback) {
+      return err?.response?.data?.message ||
         (err?.response?.data?.errors && Object.values(err.response.data.errors)[0][0]) ||
-        err?.message ||
-        fallback
-      )
+        err?.message || fallback
+    },
+
+    formatDate(v) {
+      if (!v) return '—'
+      return new Date(v).toLocaleString(this.$i18n?.locale || 'en')
+    },
+
+    formatPrice(val) {
+      if (val == null) return ''
+      const n = Number(val)
+      return Number.isFinite(n) ? n.toLocaleString() : val
     }
   }
 }
 </script>
 
 <style scoped>
-.header{margin-bottom:8px}
-.toolbar{display:flex;align-items:center;margin-bottom:12px}
-.flex-spacer{flex:1}
-.mr-2{margin-right:8px}
-.mb-2{margin-bottom:12px}
-.pagination{margin-top:12px;text-align:right}
-.muted{color:#999;font-size:12px}
-.form{max-width:780px}
-.logo-preview{margin-top:6px}
-.logo-preview img{height:40px;border-radius:6px;border:1px solid #eee}
-.ml-1{margin-left:6px}
-.meta-grid{display:flex;flex-direction:column;gap:6px}
-.meta-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px}
+.header h3 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.search-input {
+  max-width: 320px;
+}
+
+.flex-spacer { flex: 1; }
+
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.muted { color: #999; font-size: 13px; }
+.ml-1 { margin-left: 8px; }
+
+/* Logo */
+.logo-avatar { vertical-align: middle; }
+.logo-preview { margin-top: 10px; display: flex; align-items: center; gap: 10px; }
+.logo-preview img { width: 60px; height: 60px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; }
+
+/* Meta */
+.meta-grid { display: flex; flex-direction: column; gap: 8px; }
+.meta-row { display: flex; gap: 8px; align-items: center; }
+.meta-row .el-input { flex: 1; }
+
+/* RTL Fixes */
+[dir="rtl"] .toolbar { flex-direction: row-reverse; text-align: right; }
+[dir="rtl"] .pagination { direction: rtl; }
+
+/* Ensure table cells don't overflow */
+:deep(.el-table .cell) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

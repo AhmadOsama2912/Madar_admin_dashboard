@@ -132,12 +132,6 @@ export const asyncRoutes = [
         component: () => import('@/views/customers/index.vue'),
         name: 'CustomersIndex',
         meta: { title: 'routes.customers.index', roles: ['superadmin'] }
-      },
-      {
-        path: 'create',
-        component: () => import('@/views/customers/create.vue'),
-        name: 'CustomerCreate',
-        meta: { title: 'routes.customers.create', roles: ['superadmin'] }
       }
     ]
   },

@@ -1,63 +1,153 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" :dir="isRTL ? 'rtl' : 'ltr'">
     <el-card shadow="never">
       <!-- Toolbar -->
       <div class="toolbar">
         <el-input
           v-model="q.q"
-          placeholder="Search username / email…"
+          :placeholder="$t('users.search_placeholder')"
           clearable
           class="mr-2"
           style="max-width:280px"
           @keyup.enter.native="fetch"
         />
-        <el-select v-model="q.role" clearable placeholder="Role" class="mr-2" style="width:160px">
+        <el-select
+          v-model="q.role"
+          clearable
+          :placeholder="$t('users.role')"
+          class="mr-2"
+          style="width:160px"
+        >
           <el-option label="Manager" value="manager" />
           <el-option label="Supervisor" value="supervisor" />
         </el-select>
-        <el-select v-model="q.customer_id" clearable filterable placeholder="Customer" class="mr-2" style="width:260px">
-          <el-option v-for="c in customers" :key="c.id" :label="c.name" :value="c.id" />
+        <el-select
+          v-model="q.customer_id"
+          clearable
+          filterable
+          :placeholder="$t('users.customer')"
+          class="mr-2"
+          style="width:260px"
+        >
+          <el-option
+            v-for="c in customers"
+            :key="c.id"
+            :label="c.name"
+            :value="c.id"
+          />
         </el-select>
-        <el-button type="primary" icon="el-icon-search" @click="fetch">Search</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          @click="fetch"
+        >
+          {{ $t('common.search') }}
+        </el-button>
 
         <div class="flex-spacer" />
-        <el-button type="primary" icon="el-icon-plus" @click="openCreate">Create User</el-button>
+
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          @click="openCreate"
+        >
+          {{ $t('users.create_title') }}
+        </el-button>
       </div>
 
       <!-- Table -->
-      <el-table v-loading="loading" :data="rows" border>
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="username" label="Username" min-width="160" />
-        <el-table-column prop="email" label="Email" min-width="220" />
-        <el-table-column label="Role" width="140">
+      <el-table
+        v-loading="loading"
+        :data="rows"
+        border
+      >
+        <el-table-column
+          prop="id"
+          :label="$t('common.id')"
+          width="80"
+        />
+        <el-table-column
+          prop="username"
+          :label="$t('users.username')"
+          min-width="160"
+        />
+        <el-table-column
+          prop="email"
+          :label="$t('users.email')"
+          min-width="220"
+        />
+        <el-table-column
+          :label="$t('users.role')"
+          width="140"
+        >
           <template slot-scope="{ row }">
             <el-tag :type="row.role === 'manager' ? 'success' : ''">
-              {{ row.role }}
+              {{ $t('users.roles.' + row.role) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Customer" min-width="220">
+        <el-table-column
+          :label="$t('users.customer')"
+          min-width="220"
+        >
           <template slot-scope="{ row }">
             <span v-if="row.customer && row.customer.name">
               {{ row.customer.name }}
-              <span v-if="row.customer.package" class="muted"> — {{ row.customer.package.name }}</span>
+              <span
+                v-if="row.customer.package"
+                class="muted"
+              >
+                — {{ row.customer.package.name }}
+              </span>
             </span>
-            <span v-else>#{{ row.customer_id || (row.customer && row.customer.id) }}</span>
+            <span v-else>
+              #{{ row.customer_id || (row.customer && row.customer.id) }}
+            </span>
           </template>
         </el-table-column>
-        <el-table-column prop="created_at" label="Created At" width="190">
-          <template slot-scope="{ row }">{{ formatDate(row.created_at) }}</template>
-        </el-table-column>
-        <el-table-column label="Actions" width="200" fixed="right">
+        <el-table-column
+          prop="created_at"
+          :label="$t('common.created_at')"
+          width="190"
+        >
           <template slot-scope="{ row }">
-            <el-button size="mini" @click="openEdit(row)">Edit</el-button>
-            <el-button size="mini" type="danger" @click="remove(row)">Delete</el-button>
+            {{ formatDate(row.created_at) }}
+          </template>
+        </el-table-column>
+
+        <!-- Actions (بدون fixed) -->
+        <el-table-column
+          :label="$t('common.actions')"
+          width="200"
+          align="center"
+        >
+          <template slot-scope="{ row }">
+            <el-button
+              size="mini"
+              @click="openEdit(row)"
+            >
+              {{ $t('common.edit') }}
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="remove(row)"
+            >
+              {{ $t('common.delete') }}
+            </el-button>
           </template>
         </el-table-column>
 
         <template slot="empty">
-          <el-empty description="No users found">
-            <div class="mt-1"><el-button type="text" @click="fetch">Refresh</el-button></div>
+          <el-empty :description="$t('users.empty')">
+            <div class="mt-1">
+              <el-button
+                type="text"
+                @click="fetch"
+              >
+                {{ $t('common.refresh') }}
+              </el-button>
+            </div>
           </el-empty>
         </template>
       </el-table>
@@ -77,52 +167,129 @@
 
     <!-- Create/Edit dialog -->
     <el-dialog
-      :title="dlgMode==='create' ? 'Create User' : 'Edit User'"
+      :title="dlgMode==='create'
+        ? $t('users.create_title')
+        : $t('users.edit_title')"
       :visible.sync="dlgVisible"
       width="640px"
       @closed="resetForm"
     >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
-        <el-form-item label="Customer" prop="customer_id">
-          <el-select v-model="form.customer_id" placeholder="Select customer" filterable style="width:100%">
-            <el-option v-for="c in customers" :key="c.id" :label="c.name" :value="c.id" />
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="140px"
+      >
+        <el-form-item
+          :label="$t('users.customer')"
+          prop="customer_id"
+        >
+          <el-select
+            v-model="form.customer_id"
+            :placeholder="$t('users.select_customer')"
+            filterable
+            style="width:100%"
+          >
+            <el-option
+              v-for="c in customers"
+              :key="c.id"
+              :label="c.name"
+              :value="c.id"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item label="Role" prop="role">
+
+        <el-form-item
+          :label="$t('users.role')"
+          prop="role"
+        >
           <el-radio-group v-model="form.role">
-            <el-radio label="manager">Manager</el-radio>
-            <el-radio label="supervisor">Supervisor</el-radio>
+            <el-radio label="manager">
+              {{ $t('users.roles.manager') }}
+            </el-radio>
+            <el-radio label="supervisor">
+              {{ $t('users.roles.supervisor') }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="Username" prop="username">
-          <el-input v-model.trim="form.username" autocomplete="off" />
+
+        <el-form-item
+          :label="$t('users.username')"
+          prop="username"
+        >
+          <el-input
+            v-model.trim="form.username"
+            autocomplete="off"
+          />
         </el-form-item>
-        <el-form-item label="Email" prop="email">
-          <el-input v-model.trim="form.email" autocomplete="off" />
+
+        <el-form-item
+          :label="$t('users.email')"
+          prop="email"
+        >
+          <el-input
+            v-model.trim="form.email"
+            autocomplete="off"
+          />
         </el-form-item>
 
         <!-- Password required only on create -->
-        <el-form-item label="Password" :prop="dlgMode==='create' ? 'password' : 'passwordOptional'">
-          <el-input v-model.trim="form.password" type="password" autocomplete="new-password" />
-          <div v-if="dlgMode!=='create'" class="hint">Leave empty to keep current password.</div>
-        </el-form-item>
-        <el-form-item label="Confirm" :prop="dlgMode==='create' ? 'password_confirmation' : 'passwordConfirmationOptional'">
-          <el-input v-model.trim="form.password_confirmation" type="password" autocomplete="new-password" />
+        <el-form-item
+          :label="$t('common.password')"
+          :prop="dlgMode==='create' ? 'password' : 'passwordOptional'"
+        >
+          <el-input
+            v-model.trim="form.password"
+            type="password"
+            autocomplete="new-password"
+          />
+          <div
+            v-if="dlgMode!=='create'"
+            class="hint"
+          >
+            {{ $t('users.password_optional_hint') }}
+          </div>
         </el-form-item>
 
-        <el-form-item label="Phone">
+        <el-form-item
+          :label="$t('common.confirm_password')"
+          :prop="dlgMode==='create'
+            ? 'password_confirmation'
+            : 'passwordConfirmationOptional'"
+        >
+          <el-input
+            v-model.trim="form.password_confirmation"
+            type="password"
+            autocomplete="new-password"
+          />
+        </el-form-item>
+
+        <el-form-item :label="$t('common.phone')">
           <el-input v-model.trim="form.phone" />
         </el-form-item>
 
         <el-form-item label="Meta (JSON)">
-          <el-input v-model.trim="form.metaText" type="textarea" :rows="3" placeholder="{&quot;key&quot;:&quot;value&quot;} (optional)" />
+          <el-input
+            v-model.trim="form.metaText"
+            type="textarea"
+            :rows="3"
+            placeholder="{&quot;key&quot;:&quot;value&quot;} (optional)"
+          />
         </el-form-item>
       </el-form>
 
       <span slot="footer">
-        <el-button @click="dlgVisible=false">Cancel</el-button>
-        <el-button type="primary" :loading="submitting" @click="submit">
-          {{ dlgMode==='create' ? 'Create' : 'Save' }}
+        <el-button @click="dlgVisible=false">
+          {{ $t('common.cancel') }}
+        </el-button>
+        <el-button
+          type="primary"
+          :loading="submitting"
+          @click="submit"
+        >
+          {{ dlgMode==='create'
+            ? $t('common.create')
+            : $t('common.save') }}
         </el-button>
       </span>
     </el-dialog>
@@ -171,6 +338,11 @@ export default {
         passwordOptional: [],
         passwordConfirmationOptional: [{ validator: confirmEdit, trigger: 'blur' }]
       }
+    }
+  },
+  computed: {
+    isRTL() {
+      return this.$i18n && this.$i18n.locale && this.$i18n.locale.startsWith('ar')
     }
   },
   created() {
@@ -262,7 +434,7 @@ export default {
             payload.password = this.form.password
             payload.password_confirmation = this.form.password_confirmation
             await createUser(payload)
-            this.$message.success('User created')
+            this.$message.success(this.$t('users.create_success'))
           } else {
             // send password only if changed
             if (this.form.password) {
@@ -272,12 +444,12 @@ export default {
             // safer: pass id we stored when opening edit
             const selected = this.rows.find(r => r.username === this.form.username && r.email === this.form.email)
             await updateUser(selected ? selected.id : undefined, payload)
-            this.$message.success('User updated')
+            this.$message.success(this.$t('users.update_success'))
           }
           this.dlgVisible = false
           this.fetch()
         } catch (e) {
-          this.$message.error(this.err(e, 'Save failed'))
+          this.$message.error(this.err(e, this.$t('users.save_fail') || 'Save failed'))
         } finally {
           this.submitting = false
         }
@@ -285,9 +457,13 @@ export default {
     },
     async remove(row) {
       try {
-        await this.$confirm(`Delete user "${row.username}"?`, 'Confirm', { type: 'warning' })
+        await this.$confirm(
+          this.$t('users.delete_confirm'),
+          this.$t('users.delete_title'),
+          { type: 'warning' }
+        )
         await deleteUser(row.id)
-        this.$message.success('User deleted')
+        this.$message.success(this.$t('users.delete_success'))
         if (this.rows.length === 1 && this.q.page > 1) this.q.page -= 1
         this.fetch()
       } catch (_) {
